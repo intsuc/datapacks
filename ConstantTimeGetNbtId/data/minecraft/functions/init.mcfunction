@@ -20,7 +20,8 @@ execute store result storage _ numeric_collection_ids[3][] double 1.0 run data g
 execute store result storage _ numeric_collection_ids[4][] int 1.0 run data get storage _ tag_int_array 1.0
 execute store result storage _ numeric_collection_ids[5][] long 1.0 run data get storage _ tag_long_array 1.0
 
-data modify storage _ implicit_conversion_checker set value 0s
+data modify storage _ conversion_checker set value 0s
+data modify storage _ conversion_checker' set value 1s
 
 data modify storage _ value_or_empty_collection_id_tags set value []
 data modify storage _ value_or_empty_collection_id_tags append value [1b]
