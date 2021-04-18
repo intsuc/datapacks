@@ -6,3 +6,4 @@
 - [Constant-Time Get NBT Id](https://github.com/intsuc/datapacks/tree/main/ConstantTimeGetNbtId)
 - [NBT Sharing with Markers](https://github.com/intsuc/datapacks/tree/main/NbtSharingWithMarkers)
 - [Throw `OutOfMemoryError`](https://github.com/intsuc/datapacks/tree/main/ThrowOutOfMemoryError)
+- [Throw `StackOverflowError`](https://github.com/intsuc/datapacks/tree/main/ThrowStackOverflowError)
