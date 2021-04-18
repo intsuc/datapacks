@@ -13,12 +13,12 @@ data modify storage _ tag_int_array set value 11b
 data modify storage _ tag_long_array set value 12b
 
 data modify storage _ numeric_collection_ids set value [[], [], [], [], [], []]
-execute store result storage _ numeric_collection_ids[0][] byte 1.0 run data get storage _ tag_byte_array
-execute store result storage _ numeric_collection_ids[1][] short 1.0 run data get storage _ tag_list
-execute store result storage _ numeric_collection_ids[2][] float 1.0 run data get storage _ tag_list
-execute store result storage _ numeric_collection_ids[3][] double 1.0 run data get storage _ tag_list
-execute store result storage _ numeric_collection_ids[4][] int 1.0 run data get storage _ tag_int_array
-execute store result storage _ numeric_collection_ids[5][] long 1.0 run data get storage _ tag_long_array
+execute store result storage _ numeric_collection_ids[0][] byte 1.0 run data get storage _ tag_byte_array 1.0
+execute store result storage _ numeric_collection_ids[1][] short 1.0 run data get storage _ tag_list 1.0
+execute store result storage _ numeric_collection_ids[2][] float 1.0 run data get storage _ tag_list 1.0
+execute store result storage _ numeric_collection_ids[3][] double 1.0 run data get storage _ tag_list 1.0
+execute store result storage _ numeric_collection_ids[4][] int 1.0 run data get storage _ tag_int_array 1.0
+execute store result storage _ numeric_collection_ids[5][] long 1.0 run data get storage _ tag_long_array 1.0
 
 data modify storage _ implicit_conversion_checker set value 0s
 
