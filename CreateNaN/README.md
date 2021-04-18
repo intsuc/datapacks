@@ -1,4 +1,4 @@
-# Create NaN
+# Create `NaN`
 
 1.  ```mcfunction
     function nan/
