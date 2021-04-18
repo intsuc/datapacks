@@ -1,4 +1,4 @@
-# Constant-Time Get NBT Id
+# Get NBT Id in Constant-Time
 
 1.  ```mcfunction
     function init
