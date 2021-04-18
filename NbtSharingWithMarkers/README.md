@@ -59,7 +59,7 @@
                 [M] Old has the following entity data: [0]
             [R = 1] data get entity @s data.list
             [C] data get entity @e[tag=new, limit=1] data.list
-                <u style="color:red;">[M] New has the following entity data: [0]</u>
+                <b>[M] New has the following entity data: [0]</b>
             [R = 1] data get entity @e[tag=new, limit=1] data.list
         [C] data modify entity @e[tag=new, limit=1] data.list append value 1
             [M] Modified entity data of New
@@ -69,7 +69,7 @@
         [R = 0] function get
         [F] minecraft:get size=2
             [C] data get entity @s data.list
-                <u style="color:red;">[M] Old has the following entity data: [0, 1]</u>
+                <b>[M] Old has the following entity data: [0, 1]</b>
             [R = 2] data get entity @s data.list
             [C] data get entity @e[tag=new, limit=1] data.list
                 [M] New has the following entity data: [0, 1]
