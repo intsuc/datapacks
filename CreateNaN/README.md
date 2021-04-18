@@ -1,6 +1,10 @@
 # Create `NaN`
 
 1.  ```mcfunction
+    function init
+    ```
+---
+1.  ```mcfunction
     debug function main
     ```
 
