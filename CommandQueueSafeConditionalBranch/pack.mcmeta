@@ -1,6 +1,6 @@
 {
     "pack": {
-        "description": "",
+        "description": "Command Queue Safe Conditional Branch",
         "pack_format": 7,
         "world_version": 2709
     }
