@@ -1,4 +1,4 @@
-# Stack Frame with Marker
+# Stack Frame with `Marker`
 
 1.  ```mcfunction
     debug function main/

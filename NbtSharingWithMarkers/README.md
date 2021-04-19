@@ -1,4 +1,4 @@
-# NBT Sharing with Markers
+# NBT Sharing with `Marker`s
 
 1.  ```mcfunction
     function init
