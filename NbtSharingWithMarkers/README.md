@@ -11,70 +11,105 @@
 ### Debug trace
 
 <pre><code>minecraft:main
-    [C] execute in minecraft:overworld run summon minecraft:marker 8.0 0.0 8.0 {CustomName: '"Old"', Tags: ["old"], data: {list: []}}
-        [M] Summoned new Old
-    [R = 1] execute in minecraft:overworld run summon minecraft:marker 8.0 0.0 8.0 {CustomName: '"Old"', Tags: ["old"], data: {list: []}}
-    [C] execute in minecraft:the_nether as @e[tag=old] positioned as @s run function test
+    [C] execute in minecraft:overworld run summon minecraft:marker 8.0 0.0 8.0 {CustomName: '"e1"', Tags: ["e1"], data: {list: []}}
+        [M] Summoned new e1
+    [R = 1] execute in minecraft:overworld run summon minecraft:marker 8.0 0.0 8.0 {CustomName: '"e1"', Tags: ["e1"], data: {list: []}}
+    [C] execute in minecraft:overworld as @e[tag=e1] positioned as @s run function test
         [M] Executed 0 commands from function 'minecraft:test'
-    [R = 1] execute in minecraft:the_nether as @e[tag=old] positioned as @s run function test
-    [F] minecraft:test size=11
+    [R = 1] execute in minecraft:overworld as @e[tag=e1] positioned as @s run function test
+    [F] minecraft:test size=16
         [C] function get
             [M] Executed 0 commands from function 'minecraft:get'
         [R = 0] function get
-        [F] minecraft:get size=2
+        [F] minecraft:get size=3
             [C] data get entity @s data.list
-                [M] Old has the following entity data: []
+                [M] e1 has the following entity data: []
             [R = 0] data get entity @s data.list
-            [C] data get entity @e[tag=new, limit=1] data.list
-                [E] No entity was found        [C] teleport @s ~ ~ ~
-            [M] Teleported Old to 8.0, 0.0, 8.0
-        [R = 1] teleport @s ~ ~ ~
-        [C] tag @e[tag=old, distance=..1.0, limit=1] add new
-            [M] Added tag 'new' to Old
-        [R = 1] tag @e[tag=old, distance=..1.0, limit=1] add new
-        [C] tag @e[tag=new] remove old
-            [M] Removed tag 'old' from Old
-        [R = 1] tag @e[tag=new] remove old
-        [C] data modify entity @e[tag=new, limit=1] CustomName set value '"New"'
-            [M] Modified entity data of New
-        [R = 1] data modify entity @e[tag=new, limit=1] CustomName set value '"New"'
+            [C] data get entity @e[tag=e2, limit=1] data.list
+                [E] No entity was found            [C] data get entity @e[tag=e3, limit=1] data.list
+                [E] No entity was found        [C] execute in minecraft:the_nether run teleport @s ~ ~ ~
+            [M] Teleported e1 to 1.0, 0.0, 1.0
+        [R = 1] execute in minecraft:the_nether run teleport @s ~ ~ ~
+        [C] execute in minecraft:the_nether run tag @e[tag=e1, distance=..1.0, limit=1] add e2
+            [M] Added tag 'e2' to e1
+        [R = 1] execute in minecraft:the_nether run tag @e[tag=e1, distance=..1.0, limit=1] add e2
+        [C] tag @e[tag=e2] remove e1
+            [M] Removed tag 'e1' from e1
+        [R = 1] tag @e[tag=e2] remove e1
+        [C] data modify entity @e[tag=e2, limit=1] CustomName set value '"e2"'
+            [M] Modified entity data of e2
+        [R = 1] data modify entity @e[tag=e2, limit=1] CustomName set value '"e2"'
+        [C] execute in minecraft:the_end run teleport @s ~ ~ ~
+            [M] Teleported e1 to 8.0, 0.0, 8.0
+        [R = 1] execute in minecraft:the_end run teleport @s ~ ~ ~
+        [C] execute in minecraft:the_end run tag @e[tag=e1, distance=..1.0, limit=1] add e3
+            [M] Added tag 'e3' to e1
+        [R = 1] execute in minecraft:the_end run tag @e[tag=e1, distance=..1.0, limit=1] add e3
+        [C] tag @e[tag=e3] remove e1
+            [M] Removed tag 'e1' from e1
+        [R = 1] tag @e[tag=e3] remove e1
+        [C] data modify entity @e[tag=e3, limit=1] CustomName set value '"e3"'
+            [M] Modified entity data of e3
+        [R = 1] data modify entity @e[tag=e3, limit=1] CustomName set value '"e3"'
         [C] function get
             [M] Executed 0 commands from function 'minecraft:get'
         [R = 0] function get
-        [F] minecraft:get size=2
+        [F] minecraft:get size=3
             [C] data get entity @s data.list
-                [M] Old has the following entity data: []
+                [M] e1 has the following entity data: []
             [R = 0] data get entity @s data.list
-            [C] data get entity @e[tag=new, limit=1] data.list
-                [M] New has the following entity data: []
-            [R = 0] data get entity @e[tag=new, limit=1] data.list
+            [C] data get entity @e[tag=e2, limit=1] data.list
+                [M] e2 has the following entity data: []
+            [R = 0] data get entity @e[tag=e2, limit=1] data.list
+            [C] data get entity @e[tag=e3, limit=1] data.list
+                [M] e3 has the following entity data: []
+            [R = 0] data get entity @e[tag=e3, limit=1] data.list
         [C] data modify entity @s data.list append value 0
-            [M] Modified entity data of Old
+            [M] Modified entity data of e1
         [R = 1] data modify entity @s data.list append value 0
         [C] function get
             [M] Executed 0 commands from function 'minecraft:get'
         [R = 0] function get
-        [F] minecraft:get size=2
+        [F] minecraft:get size=3
             [C] data get entity @s data.list
-                [M] Old has the following entity data: [0]
+                [M] e1 has the following entity data: [0]
             [R = 1] data get entity @s data.list
-            [C] data get entity @e[tag=new, limit=1] data.list
-                <b>[M] New has the following entity data: [0]</b>
-            [R = 1] data get entity @e[tag=new, limit=1] data.list
-        [C] data modify entity @e[tag=new, limit=1] data.list append value 1
-            [M] Modified entity data of New
-        [R = 1] data modify entity @e[tag=new, limit=1] data.list append value 1
+            [C] data get entity @e[tag=e2, limit=1] data.list
+                <b>[M] e2 has the following entity data: [0]</b>
+            [R = 1] data get entity @e[tag=e2, limit=1] data.list
+            [C] data get entity @e[tag=e3, limit=1] data.list
+                <b>[M] e3 has the following entity data: [0]</b>
+            [R = 1] data get entity @e[tag=e3, limit=1] data.list
+        [C] data modify entity @e[tag=e2, limit=1] data.list append value 1
+            [M] Modified entity data of e2
+        [R = 1] data modify entity @e[tag=e2, limit=1] data.list append value 1
         [C] function get
             [M] Executed 0 commands from function 'minecraft:get'
         [R = 0] function get
-        [F] minecraft:get size=2
+        [F] minecraft:get size=3
             [C] data get entity @s data.list
-                <b>[M] Old has the following entity data: [0, 1]</b>
+                <b>[M] e1 has the following entity data: [0, 1]</b>
             [R = 2] data get entity @s data.list
-            [C] data get entity @e[tag=new, limit=1] data.list
-                [M] New has the following entity data: [0, 1]
-            [R = 2] data get entity @e[tag=new, limit=1] data.list
-        [C] kill @e[tag=new]
-            [M] Killed New
-        [R = 1] kill @e[tag=new]
+            [C] data get entity @e[tag=e2, limit=1] data.list
+                [M] e2 has the following entity data: [0, 1]
+            [R = 2] data get entity @e[tag=e2, limit=1] data.list
+            [C] data get entity @e[tag=e3, limit=1] data.list
+                <b>[M] e3 has the following entity data: [0, 1]</b>
+            [R = 2] data get entity @e[tag=e3, limit=1] data.list
+        [C] data modify entity @e[tag=e3, limit=1] data.list append value 2
+            [M] Modified entity data of e3
+        [R = 1] data modify entity @e[tag=e3, limit=1] data.list append value 2
+        [C] function get
+            [M] Executed 0 commands from function 'minecraft:get'
+        [R = 0] function get
+        [F] minecraft:get size=3
+            [C] data get entity @s data.list
+                <b>[M] e1 has the following entity data: [0, 1, 2]</b>
+            [R = 3] data get entity @s data.list
+            [C] data get entity @e[tag=e2, limit=1] data.list
+                <b>[M] e2 has the following entity data: [0, 1, 2]</b>
+            [R = 3] data get entity @e[tag=e2, limit=1] data.list
+            [C] data get entity @e[tag=e3, limit=1] data.list
+                [M] e3 has the following entity data: [0, 1, 2]
+            [R = 3] data get entity @e[tag=e3, limit=1] data.list
 </code></pre>
