@@ -1,5 +1,7 @@
 # NBT Sharing with `Marker`s
 
+Fixed in 21w16a. See: [MC-223382 - A marker's data tag can be shared among multiple markers](https://bugs.mojang.com/browse/MC-223382)
+
 1.  ```mcfunction
     function init
     ```
