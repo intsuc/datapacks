@@ -1,0 +1,1 @@
+execute if data storage _ {tag: 0} run function dispatch/0
