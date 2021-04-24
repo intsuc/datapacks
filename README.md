@@ -2,6 +2,7 @@
 
 ## Samples
 
+- [Asynchronous Shift List](https://github.com/intsuc/datapacks/tree/main/AsynchronousShiftList)
 - [Command Queue Safe Conditional Branch](https://github.com/intsuc/datapacks/tree/main/CommandQueueSafeConditionalBranch)
 - [Create `NaN`](https://github.com/intsuc/datapacks/tree/main/CreateNaN)
 - [Function Execution without Resizing](https://github.com/intsuc/datapacks/tree/main/FunctionExecutionWithoutResizing)
