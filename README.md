@@ -1,5 +1,7 @@
 # datapacks
 
+A variety of sample datapacks, from pathological to practical.
+
 ## Samples
 
 - [Asynchronous Shift List](https://github.com/intsuc/datapacks/tree/main/AsynchronousShiftList)
