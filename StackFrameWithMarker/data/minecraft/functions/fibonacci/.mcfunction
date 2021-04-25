@@ -1,3 +1,5 @@
+# Call the function prologue.
+# It must be called at the latest before the next stack frame is created.
 function prologue/
 
 execute store result score #0 _ run data get entity @s data.n 1.0

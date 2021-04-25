@@ -1,10 +1,12 @@
-function make_record/
+# Call the fibonacci function with `{n: n-1}`.
+function make_frame/
 execute store result entity 0-0-0-0-0 data.n int 1.0 run scoreboard players remove #0 _ 1
 execute as 0-0-0-0-0 run function fibonacci/
 
 data modify entity @s data.fibonacci(n-1) set from storage _ result
 
-function make_record/
+# Call the fibonacci function with `{n: n-2}`.
+function make_frame/
 execute store result score #0 _ run data get entity @s data.n 1.0
 execute store result entity 0-0-0-0-0 data.n int 1.0 run scoreboard players remove #0 _ 2
 execute as 0-0-0-0-0 run function fibonacci/

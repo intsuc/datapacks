@@ -1,5 +1,8 @@
 # Stack Frame with `Marker`
 
+The `CommandSourceStack`(CSS), which is the execution context of the command, can have an entity.
+Using `marker`, we can embed NBT into CSS and use it as a stack frame.
+
 1.  ```mcfunction
     debug function main/
     ```
@@ -10,10 +13,10 @@
     [C] scoreboard objectives add _ dummy
         [M] Created new objective [_]
     [R = 1] scoreboard objectives add _ dummy
-    [C] function make_record/
-        [M] Executed 0 commands from function 'minecraft:make_record/'
-    [R = 0] function make_record/
-    [F] minecraft:make_record/ size=1
+    [C] function make_frame/
+        [M] Executed 0 commands from function 'minecraft:make_frame/'
+    [R = 0] function make_frame/
+    [F] minecraft:make_frame/ size=1
         [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
             [M] Summoned new Marker
         [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -40,10 +43,10 @@
             [M] Executed 0 commands from function 'minecraft:fibonacci/1'
         [R = 1] execute if score #0 _ matches 2.. run function fibonacci/1
         [F] minecraft:fibonacci/1 size=11
-            [C] function make_record/
-                [M] Executed 0 commands from function 'minecraft:make_record/'
-            [R = 0] function make_record/
-            [F] minecraft:make_record/ size=1
+            [C] function make_frame/
+                [M] Executed 0 commands from function 'minecraft:make_frame/'
+            [R = 0] function make_frame/
+            [F] minecraft:make_frame/ size=1
                 [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                     [M] Summoned new Marker
                 [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -70,10 +73,10 @@
                     [M] Executed 0 commands from function 'minecraft:fibonacci/1'
                 [R = 1] execute if score #0 _ matches 2.. run function fibonacci/1
                 [F] minecraft:fibonacci/1 size=11
-                    [C] function make_record/
-                        [M] Executed 0 commands from function 'minecraft:make_record/'
-                    [R = 0] function make_record/
-                    [F] minecraft:make_record/ size=1
+                    [C] function make_frame/
+                        [M] Executed 0 commands from function 'minecraft:make_frame/'
+                    [R = 0] function make_frame/
+                    [F] minecraft:make_frame/ size=1
                         [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                             [M] Summoned new Marker
                         [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -100,10 +103,10 @@
                             [M] Executed 0 commands from function 'minecraft:fibonacci/1'
                         [R = 1] execute if score #0 _ matches 2.. run function fibonacci/1
                         [F] minecraft:fibonacci/1 size=11
-                            [C] function make_record/
-                                [M] Executed 0 commands from function 'minecraft:make_record/'
-                            [R = 0] function make_record/
-                            [F] minecraft:make_record/ size=1
+                            [C] function make_frame/
+                                [M] Executed 0 commands from function 'minecraft:make_frame/'
+                            [R = 0] function make_frame/
+                            [F] minecraft:make_frame/ size=1
                                 [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                     [M] Summoned new Marker
                                 [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -130,10 +133,10 @@
                                     [M] Executed 0 commands from function 'minecraft:fibonacci/1'
                                 [R = 1] execute if score #0 _ matches 2.. run function fibonacci/1
                                 [F] minecraft:fibonacci/1 size=11
-                                    [C] function make_record/
-                                        [M] Executed 0 commands from function 'minecraft:make_record/'
-                                    [R = 0] function make_record/
-                                    [F] minecraft:make_record/ size=1
+                                    [C] function make_frame/
+                                        [M] Executed 0 commands from function 'minecraft:make_frame/'
+                                    [R = 0] function make_frame/
+                                    [F] minecraft:make_frame/ size=1
                                         [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                             [M] Summoned new Marker
                                         [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -160,10 +163,10 @@
                                             [M] Executed 0 commands from function 'minecraft:fibonacci/1'
                                         [R = 1] execute if score #0 _ matches 2.. run function fibonacci/1
                                         [F] minecraft:fibonacci/1 size=11
-                                            [C] function make_record/
-                                                [M] Executed 0 commands from function 'minecraft:make_record/'
-                                            [R = 0] function make_record/
-                                            [F] minecraft:make_record/ size=1
+                                            [C] function make_frame/
+                                                [M] Executed 0 commands from function 'minecraft:make_frame/'
+                                            [R = 0] function make_frame/
+                                            [F] minecraft:make_frame/ size=1
                                                 [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                                     [M] Summoned new Marker
                                                 [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -192,10 +195,10 @@
                                             [C] data modify entity @s data.fibonacci(n-1) set from storage _ result
                                                 [M] Modified entity data of Marker
                                             [R = 1] data modify entity @s data.fibonacci(n-1) set from storage _ result
-                                            [C] function make_record/
-                                                [M] Executed 0 commands from function 'minecraft:make_record/'
-                                            [R = 0] function make_record/
-                                            [F] minecraft:make_record/ size=1
+                                            [C] function make_frame/
+                                                [M] Executed 0 commands from function 'minecraft:make_frame/'
+                                            [R = 0] function make_frame/
+                                            [F] minecraft:make_frame/ size=1
                                                 [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                                     [M] Summoned new Marker
                                                 [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -236,10 +239,10 @@
                                     [C] data modify entity @s data.fibonacci(n-1) set from storage _ result
                                         [M] Modified entity data of Marker
                                     [R = 1] data modify entity @s data.fibonacci(n-1) set from storage _ result
-                                    [C] function make_record/
-                                        [M] Executed 0 commands from function 'minecraft:make_record/'
-                                    [R = 0] function make_record/
-                                    [F] minecraft:make_record/ size=1
+                                    [C] function make_frame/
+                                        [M] Executed 0 commands from function 'minecraft:make_frame/'
+                                    [R = 0] function make_frame/
+                                    [F] minecraft:make_frame/ size=1
                                         [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                             [M] Summoned new Marker
                                         [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -278,10 +281,10 @@
                             [C] data modify entity @s data.fibonacci(n-1) set from storage _ result
                                 [M] Modified entity data of Marker
                             [R = 1] data modify entity @s data.fibonacci(n-1) set from storage _ result
-                            [C] function make_record/
-                                [M] Executed 0 commands from function 'minecraft:make_record/'
-                            [R = 0] function make_record/
-                            [F] minecraft:make_record/ size=1
+                            [C] function make_frame/
+                                [M] Executed 0 commands from function 'minecraft:make_frame/'
+                            [R = 0] function make_frame/
+                            [F] minecraft:make_frame/ size=1
                                 [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                     [M] Summoned new Marker
                                 [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -311,10 +314,10 @@
                                     [M] Executed 0 commands from function 'minecraft:fibonacci/1'
                                 [R = 1] execute if score #0 _ matches 2.. run function fibonacci/1
                                 [F] minecraft:fibonacci/1 size=11
-                                    [C] function make_record/
-                                        [M] Executed 0 commands from function 'minecraft:make_record/'
-                                    [R = 0] function make_record/
-                                    [F] minecraft:make_record/ size=1
+                                    [C] function make_frame/
+                                        [M] Executed 0 commands from function 'minecraft:make_frame/'
+                                    [R = 0] function make_frame/
+                                    [F] minecraft:make_frame/ size=1
                                         [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                             [M] Summoned new Marker
                                         [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -343,10 +346,10 @@
                                     [C] data modify entity @s data.fibonacci(n-1) set from storage _ result
                                         [M] Modified entity data of Marker
                                     [R = 1] data modify entity @s data.fibonacci(n-1) set from storage _ result
-                                    [C] function make_record/
-                                        [M] Executed 0 commands from function 'minecraft:make_record/'
-                                    [R = 0] function make_record/
-                                    [F] minecraft:make_record/ size=1
+                                    [C] function make_frame/
+                                        [M] Executed 0 commands from function 'minecraft:make_frame/'
+                                    [R = 0] function make_frame/
+                                    [F] minecraft:make_frame/ size=1
                                         [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                             [M] Summoned new Marker
                                         [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -396,10 +399,10 @@
                     [C] data modify entity @s data.fibonacci(n-1) set from storage _ result
                         [M] Modified entity data of Marker
                     [R = 1] data modify entity @s data.fibonacci(n-1) set from storage _ result
-                    [C] function make_record/
-                        [M] Executed 0 commands from function 'minecraft:make_record/'
-                    [R = 0] function make_record/
-                    [F] minecraft:make_record/ size=1
+                    [C] function make_frame/
+                        [M] Executed 0 commands from function 'minecraft:make_frame/'
+                    [R = 0] function make_frame/
+                    [F] minecraft:make_frame/ size=1
                         [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                             [M] Summoned new Marker
                         [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -429,10 +432,10 @@
                             [M] Executed 0 commands from function 'minecraft:fibonacci/1'
                         [R = 1] execute if score #0 _ matches 2.. run function fibonacci/1
                         [F] minecraft:fibonacci/1 size=11
-                            [C] function make_record/
-                                [M] Executed 0 commands from function 'minecraft:make_record/'
-                            [R = 0] function make_record/
-                            [F] minecraft:make_record/ size=1
+                            [C] function make_frame/
+                                [M] Executed 0 commands from function 'minecraft:make_frame/'
+                            [R = 0] function make_frame/
+                            [F] minecraft:make_frame/ size=1
                                 [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                     [M] Summoned new Marker
                                 [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -459,10 +462,10 @@
                                     [M] Executed 0 commands from function 'minecraft:fibonacci/1'
                                 [R = 1] execute if score #0 _ matches 2.. run function fibonacci/1
                                 [F] minecraft:fibonacci/1 size=11
-                                    [C] function make_record/
-                                        [M] Executed 0 commands from function 'minecraft:make_record/'
-                                    [R = 0] function make_record/
-                                    [F] minecraft:make_record/ size=1
+                                    [C] function make_frame/
+                                        [M] Executed 0 commands from function 'minecraft:make_frame/'
+                                    [R = 0] function make_frame/
+                                    [F] minecraft:make_frame/ size=1
                                         [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                             [M] Summoned new Marker
                                         [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -491,10 +494,10 @@
                                     [C] data modify entity @s data.fibonacci(n-1) set from storage _ result
                                         [M] Modified entity data of Marker
                                     [R = 1] data modify entity @s data.fibonacci(n-1) set from storage _ result
-                                    [C] function make_record/
-                                        [M] Executed 0 commands from function 'minecraft:make_record/'
-                                    [R = 0] function make_record/
-                                    [F] minecraft:make_record/ size=1
+                                    [C] function make_frame/
+                                        [M] Executed 0 commands from function 'minecraft:make_frame/'
+                                    [R = 0] function make_frame/
+                                    [F] minecraft:make_frame/ size=1
                                         [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                             [M] Summoned new Marker
                                         [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -535,10 +538,10 @@
                             [C] data modify entity @s data.fibonacci(n-1) set from storage _ result
                                 [M] Modified entity data of Marker
                             [R = 1] data modify entity @s data.fibonacci(n-1) set from storage _ result
-                            [C] function make_record/
-                                [M] Executed 0 commands from function 'minecraft:make_record/'
-                            [R = 0] function make_record/
-                            [F] minecraft:make_record/ size=1
+                            [C] function make_frame/
+                                [M] Executed 0 commands from function 'minecraft:make_frame/'
+                            [R = 0] function make_frame/
+                            [F] minecraft:make_frame/ size=1
                                 [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                     [M] Summoned new Marker
                                 [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -586,10 +589,10 @@
             [C] data modify entity @s data.fibonacci(n-1) set from storage _ result
                 [M] Modified entity data of Marker
             [R = 1] data modify entity @s data.fibonacci(n-1) set from storage _ result
-            [C] function make_record/
-                [M] Executed 0 commands from function 'minecraft:make_record/'
-            [R = 0] function make_record/
-            [F] minecraft:make_record/ size=1
+            [C] function make_frame/
+                [M] Executed 0 commands from function 'minecraft:make_frame/'
+            [R = 0] function make_frame/
+            [F] minecraft:make_frame/ size=1
                 [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                     [M] Summoned new Marker
                 [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -619,10 +622,10 @@
                     [M] Executed 0 commands from function 'minecraft:fibonacci/1'
                 [R = 1] execute if score #0 _ matches 2.. run function fibonacci/1
                 [F] minecraft:fibonacci/1 size=11
-                    [C] function make_record/
-                        [M] Executed 0 commands from function 'minecraft:make_record/'
-                    [R = 0] function make_record/
-                    [F] minecraft:make_record/ size=1
+                    [C] function make_frame/
+                        [M] Executed 0 commands from function 'minecraft:make_frame/'
+                    [R = 0] function make_frame/
+                    [F] minecraft:make_frame/ size=1
                         [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                             [M] Summoned new Marker
                         [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -649,10 +652,10 @@
                             [M] Executed 0 commands from function 'minecraft:fibonacci/1'
                         [R = 1] execute if score #0 _ matches 2.. run function fibonacci/1
                         [F] minecraft:fibonacci/1 size=11
-                            [C] function make_record/
-                                [M] Executed 0 commands from function 'minecraft:make_record/'
-                            [R = 0] function make_record/
-                            [F] minecraft:make_record/ size=1
+                            [C] function make_frame/
+                                [M] Executed 0 commands from function 'minecraft:make_frame/'
+                            [R = 0] function make_frame/
+                            [F] minecraft:make_frame/ size=1
                                 [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                     [M] Summoned new Marker
                                 [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -679,10 +682,10 @@
                                     [M] Executed 0 commands from function 'minecraft:fibonacci/1'
                                 [R = 1] execute if score #0 _ matches 2.. run function fibonacci/1
                                 [F] minecraft:fibonacci/1 size=11
-                                    [C] function make_record/
-                                        [M] Executed 0 commands from function 'minecraft:make_record/'
-                                    [R = 0] function make_record/
-                                    [F] minecraft:make_record/ size=1
+                                    [C] function make_frame/
+                                        [M] Executed 0 commands from function 'minecraft:make_frame/'
+                                    [R = 0] function make_frame/
+                                    [F] minecraft:make_frame/ size=1
                                         [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                             [M] Summoned new Marker
                                         [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -711,10 +714,10 @@
                                     [C] data modify entity @s data.fibonacci(n-1) set from storage _ result
                                         [M] Modified entity data of Marker
                                     [R = 1] data modify entity @s data.fibonacci(n-1) set from storage _ result
-                                    [C] function make_record/
-                                        [M] Executed 0 commands from function 'minecraft:make_record/'
-                                    [R = 0] function make_record/
-                                    [F] minecraft:make_record/ size=1
+                                    [C] function make_frame/
+                                        [M] Executed 0 commands from function 'minecraft:make_frame/'
+                                    [R = 0] function make_frame/
+                                    [F] minecraft:make_frame/ size=1
                                         [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                             [M] Summoned new Marker
                                         [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -755,10 +758,10 @@
                             [C] data modify entity @s data.fibonacci(n-1) set from storage _ result
                                 [M] Modified entity data of Marker
                             [R = 1] data modify entity @s data.fibonacci(n-1) set from storage _ result
-                            [C] function make_record/
-                                [M] Executed 0 commands from function 'minecraft:make_record/'
-                            [R = 0] function make_record/
-                            [F] minecraft:make_record/ size=1
+                            [C] function make_frame/
+                                [M] Executed 0 commands from function 'minecraft:make_frame/'
+                            [R = 0] function make_frame/
+                            [F] minecraft:make_frame/ size=1
                                 [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                     [M] Summoned new Marker
                                 [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -797,10 +800,10 @@
                     [C] data modify entity @s data.fibonacci(n-1) set from storage _ result
                         [M] Modified entity data of Marker
                     [R = 1] data modify entity @s data.fibonacci(n-1) set from storage _ result
-                    [C] function make_record/
-                        [M] Executed 0 commands from function 'minecraft:make_record/'
-                    [R = 0] function make_record/
-                    [F] minecraft:make_record/ size=1
+                    [C] function make_frame/
+                        [M] Executed 0 commands from function 'minecraft:make_frame/'
+                    [R = 0] function make_frame/
+                    [F] minecraft:make_frame/ size=1
                         [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                             [M] Summoned new Marker
                         [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -830,10 +833,10 @@
                             [M] Executed 0 commands from function 'minecraft:fibonacci/1'
                         [R = 1] execute if score #0 _ matches 2.. run function fibonacci/1
                         [F] minecraft:fibonacci/1 size=11
-                            [C] function make_record/
-                                [M] Executed 0 commands from function 'minecraft:make_record/'
-                            [R = 0] function make_record/
-                            [F] minecraft:make_record/ size=1
+                            [C] function make_frame/
+                                [M] Executed 0 commands from function 'minecraft:make_frame/'
+                            [R = 0] function make_frame/
+                            [F] minecraft:make_frame/ size=1
                                 [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                     [M] Summoned new Marker
                                 [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
@@ -862,10 +865,10 @@
                             [C] data modify entity @s data.fibonacci(n-1) set from storage _ result
                                 [M] Modified entity data of Marker
                             [R = 1] data modify entity @s data.fibonacci(n-1) set from storage _ result
-                            [C] function make_record/
-                                [M] Executed 0 commands from function 'minecraft:make_record/'
-                            [R = 0] function make_record/
-                            [F] minecraft:make_record/ size=1
+                            [C] function make_frame/
+                                [M] Executed 0 commands from function 'minecraft:make_frame/'
+                            [R = 0] function make_frame/
+                            [F] minecraft:make_frame/ size=1
                                 [C] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
                                     [M] Summoned new Marker
                                 [R = 1] summon minecraft:marker ~ ~ ~ {UUID: [I; 0, 0, 0, 0]}
