@@ -1,5 +1,8 @@
 # Remove `LivingEntity` with Known UUID
 
+The `LivingEntity` need to be entity-ticked to be removed.
+Using UUID duplication, we can remove them immediately without entity-ticking chunks.
+
 1.  ```mcfunction
     function init
     ```
