@@ -1,7 +1,0 @@
-{
-    "pack": {
-        "description": "Throw `StackOverflowError`",
-        "pack_format": 7,
-        "world_version": 2709
-    }
-}

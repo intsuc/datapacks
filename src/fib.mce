@@ -1,0 +1,12 @@
+{dynamic, recursive}
+
+import {+, -}
+
+export {load}
+
+def fib [n : int] : int ≔
+  match n [
+    0 ⇒ 1
+    1 ⇒ 1
+    n ⇒ ((fib [(n - 1)]) + (fib [(n - 2)]))
+  ]

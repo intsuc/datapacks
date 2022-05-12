@@ -1,7 +1,0 @@
-{
-    "pack": {
-        "description": "Remove `LivingEntity` with Known UUID",
-        "pack_format": 7,
-        "world_version": 2709
-    }
-}

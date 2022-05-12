@@ -1,0 +1,5 @@
+{dynamic}
+
+import {fib}
+
+def load [] : int ≔ (fib [10])

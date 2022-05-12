@@ -1,7 +1,0 @@
-{
-    "pack": {
-        "description": "Get NBT Id in Constant-Time",
-        "pack_format": 7,
-        "world_version": 2709
-    }
-}
