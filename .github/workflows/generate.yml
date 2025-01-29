@@ -18,3 +18,8 @@ jobs:
           java-version: "23"
       - uses: gradle/actions/setup-gradle@v4
       - run: ./gradlew :main:run --args="main.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          path: "main.zip"
+          if-no-files-found: error
+          retention-days: 1
