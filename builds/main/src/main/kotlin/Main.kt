@@ -5,6 +5,7 @@ import kotlin.io.path.Path
 
 val helloWorld by Function {
     say("Hello, world!")
+    this()
 }
 
 fun main(args: Array<String>) = PackOutputStream.ofFile(Path(args.first())).use {

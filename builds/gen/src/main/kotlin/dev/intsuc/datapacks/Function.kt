@@ -14,28 +14,26 @@ class Function private constructor(
 
     private fun generate(output: PackOutputStream) {
         output.entry("data/minecraft/function/$name.mcfunction")
-        Builder().apply(block).build { command ->
-            output.line(command)
-        }
+        Builder().apply(block).build(output::line)
     }
 
-    class Builder internal constructor() {
+    inner class Builder internal constructor() {
         private val commands: MutableList<String> = mutableListOf()
 
-        operator fun Function.invoke() = commands.add("function $name")
+        operator fun invoke() = +Command.function(name)
 
-        fun say(message: String) = commands.add("say $message")
+        operator fun Function.invoke() = +Command.function(name)
 
-        internal fun build(block: (String) -> Unit) {
-            for (command in commands) {
-                block(command)
-            }
-        }
+        fun say(message: String) = +Command.say(message)
+
+        internal fun build(block: (String) -> Unit) = commands.forEach(block)
+
+        private operator fun String.unaryPlus() = commands.add(this)
     }
 
     class Delegate internal constructor(private val block: Builder.() -> Unit) {
         operator fun getValue(thisRef: Any?, property: KProperty<*>): Function {
-            val name = "${thisRef?.javaClass?.name?.snakecase()?.let { "$it/" } ?: ""}${property.name.snakecase()}"
+            val name = "${thisRef?.javaClass?.name?.let { "$it/" } ?: ""}${property.name}".snakecase()
             return functions.getOrPut(name) { Function(name, block) }
         }
 
