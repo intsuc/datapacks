@@ -19,7 +19,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - run: |
           ./gradlew :main:run --args="../../generated"
-          git worktree generated
+          git worktree add generated
           git config --global user.name "intsuc"
           git config --global user.email ""
           cd generated
