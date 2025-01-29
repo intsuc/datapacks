@@ -27,4 +27,4 @@ jobs:
           cd generated
           git add .
           git commit -m "Update"
-          git push -u origin generated
+          git push -f -u origin generated
