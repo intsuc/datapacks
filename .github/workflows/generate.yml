@@ -17,9 +17,9 @@ jobs:
           distribution: "graalvm"
           java-version: "23"
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew :main:run --args="build/main.zip"
+      - run: ./gradlew :main:run --args="build/main"
       - uses: actions/upload-artifact@v4
         with:
-          path: "builds/main/build/main.zip"
+          path: "builds/main/build/main"
           if-no-files-found: error
           retention-days: 1

@@ -1,6 +1,6 @@
 import dev.intsuc.datapacks.Function
 import dev.intsuc.datapacks.Function.Companion.generateAll
-import dev.intsuc.datapacks.PackOutputStream
+import dev.intsuc.datapacks.PackWriter
 import kotlin.io.path.Path
 
 val helloWorld by Function {
@@ -8,8 +8,6 @@ val helloWorld by Function {
     this()
 }
 
-fun main(args: Array<String>) = PackOutputStream.ofFile(Path(args.first())).use {
-    it.generateAll(
-        helloWorld,
-    )
-}
+fun main(args: Array<String>) = PackWriter.ofPath(Path(args.first())).generateAll(
+    helloWorld,
+)

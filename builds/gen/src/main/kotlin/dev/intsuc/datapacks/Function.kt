@@ -1,7 +1,10 @@
 package dev.intsuc.datapacks
 
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonObject
 import kotlin.reflect.KProperty
 
 class Function private constructor(
@@ -12,9 +15,9 @@ class Function private constructor(
         functions.add(this)
     }
 
-    private fun generate(output: PackOutputStream) {
-        output.entry("data/minecraft/function/$name.mcfunction")
-        Builder().apply(block).build(output::line)
+    private fun generate(writer: PackWriter) {
+        writer.entry("data/minecraft/function/$name.mcfunction")
+        Builder().apply(block).build(writer::write)
     }
 
     inner class Builder internal constructor() {
@@ -45,8 +48,10 @@ class Function private constructor(
     companion object {
         private const val DATA_PACK_FORMAT: Int = 64
 
+        @OptIn(ExperimentalSerializationApi::class)
         private val json: Json = Json {
             prettyPrint = true
+            prettyPrintIndent = "  "
         }
 
         private val functions: MutableList<Function> = mutableListOf()
@@ -54,19 +59,18 @@ class Function private constructor(
         operator fun invoke(block: Builder.() -> Unit): Delegate = Delegate(block)
 
         @OptIn(ExperimentalSerializationApi::class)
-        private fun PackOutputStream.metadata() {
+        private fun PackWriter.metadata() {
             entry("pack.mcmeta")
-            json.encodeToStream(buildJsonObject {
+            write(json.encodeToString(buildJsonObject {
                 putJsonObject("pack") {
                     put("description", "")
                     put("pack_format", DATA_PACK_FORMAT)
                 }
-            }, this)
-            write('\n'.code)
+            }))
         }
 
         @OptIn(ExperimentalSerializationApi::class)
-        fun PackOutputStream.generateAll(@Suppress("unused") vararg exports: Function) {
+        fun PackWriter.generateAll(@Suppress("unused") vararg exports: Function) = use {
             metadata()
             while (functions.isNotEmpty()) {
                 functions.removeLast().generate(this)
