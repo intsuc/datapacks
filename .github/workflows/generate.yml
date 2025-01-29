@@ -17,3 +17,4 @@ jobs:
           distribution: "graalvm"
           java-version: "23"
       - uses: gradle/actions/setup-gradle@v4
+      - run: ./gradlew :main:run --args="main.zip"

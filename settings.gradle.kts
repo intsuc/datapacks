@@ -1,1 +1,1 @@
-includeBuild("builds/gen")
+includeBuild("builds/main")
