@@ -25,7 +25,7 @@ jobs:
           git config --global user.name "intsuc"
           git config --global user.email ""
           cd generated
-          rm -rf *
+          rm -rf * .*
           mv ../builds/main/build/main/* .
           git add .
           git commit -m "Update"
