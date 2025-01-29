@@ -18,8 +18,8 @@ jobs:
           java-version: "23"
       - uses: gradle/actions/setup-gradle@v4
       - run: |
-          ./gradlew :main:run --args="../../generated"
           git worktree add generated
+          ./gradlew :main:run --args="../../generated"
           git config --global user.name "intsuc"
           git config --global user.email ""
           cd generated
