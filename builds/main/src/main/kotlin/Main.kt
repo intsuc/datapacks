@@ -1,9 +1,10 @@
 import dev.intsuc.datapacks.Function
-import dev.intsuc.datapacks.Function.Companion.generateAll
 import dev.intsuc.datapacks.PackWriter
+import dev.intsuc.datapacks.function
+import dev.intsuc.datapacks.write
 import kotlin.io.path.Path
 
-val helloWorld by Function {
+val helloWorld by function {
     say("Hello, world!")
     val a by score(10)
     var b by score(20)
@@ -11,8 +12,11 @@ val helloWorld by Function {
     b += 1
     b -= 2
     this()
+    f()
 }
 
-fun main(args: Array<String>) = PackWriter.ofPath(Path(args.first())).generateAll(
-    helloWorld,
-)
+val f: Function by function {
+    helloWorld()
+}
+
+fun main(args: Array<String>) = PackWriter.ofPath(Path(args.first())).write()
