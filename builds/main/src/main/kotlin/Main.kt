@@ -29,6 +29,14 @@ val helloWorld by function {
     b `min=` 6
     b `max=` 7
 
+    val c by score(30)
+    val d by score(40)
+    b = score { a * b + c * d }
+    say("_")
+    b = score { a + b * c - d / a % b min c max d }
+    say("_")
+    b = score { a + score { b + score { c + d } + a } + b }
+
     this()
     f()
 }

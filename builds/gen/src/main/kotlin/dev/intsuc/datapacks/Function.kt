@@ -1,4 +1,5 @@
 @file:Suppress("FunctionName")
+
 package dev.intsuc.datapacks
 
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -37,7 +38,7 @@ class FunctionProvider internal constructor(private val block: FunctionBuilder.(
 
 class FunctionBuilder internal constructor(private val name: String) {
     private val commands: MutableList<String> = mutableListOf()
-    private var tempSize: Int = 0
+    private var nextTemp: Int = 0
 
     operator fun invoke() = +"function $name"
 
@@ -47,10 +48,16 @@ class FunctionBuilder internal constructor(private val name: String) {
 
     fun score(value: Int) = ScoreProvider(value)
 
+    fun score(block: ScoreBuilder.() -> Unit): Score = ScoreBuilder(++nextTemp).apply(block).build()
+
     inner class Score internal constructor(val name: String) {
+        val isTemp: Boolean by lazy { name.toIntOrNull() != null }
+
         operator fun getValue(thisRef: Any?, property: KProperty<*>): Score = this
 
         operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Score) = +"scoreboard players operation $this _ = $value _"
+
+        infix fun `=`(source: Score) = if (this !== source) run { +"scoreboard players set $this _ = $source _" } else Unit
 
         operator fun plusAssign(source: Score) = +"scoreboard players operation $this _ += $source _"
 
@@ -84,14 +91,37 @@ class FunctionBuilder internal constructor(private val name: String) {
 
         infix fun `max=`(value: Int) = useTemp { it `=` value; this `max=` it }
 
-        private inline fun useTemp(block: (Score) -> Unit) {
-            val temp = Score(tempSize.toString())
-            tempSize += 1
-            block(temp)
-            tempSize -= 1
-        }
+        private inline fun useTemp(block: (Score) -> Unit) = block(Score((++nextTemp).toString())).also { nextTemp -= 1 }
 
         override fun toString(): String = "#$name"
+    }
+
+    inner class ScoreBuilder internal constructor(private val initialTemp: Int) {
+        private lateinit var lastTemp: Score
+
+        operator fun Score.plus(right: Score): Score = newTemp(this, right) { it `=` this; it += right }
+
+        operator fun Score.minus(right: Score): Score = newTemp(this, right) { it `=` this; it -= right }
+
+        operator fun Score.times(right: Score): Score = newTemp(this, right) { it `=` this; it *= right }
+
+        operator fun Score.div(right: Score): Score = newTemp(this, right) { it `=` this; it /= right }
+
+        operator fun Score.rem(right: Score): Score = newTemp(this, right) { it `=` this; it %= right }
+
+        infix fun Score.min(right: Score): Score = newTemp(this, right) { it `=` this; it `min=` right }
+
+        infix fun Score.max(right: Score): Score = newTemp(this, right) { it `=` this; it `max=` right }
+
+        private inline fun newTemp(left: Score, right: Score, block: (Score) -> Unit): Score = when {
+            left.isTemp && right.isTemp -> left.also(block)
+            else -> Score((++nextTemp).toString()).also(block)
+        }.also { lastTemp = it }
+
+        fun build(): Score {
+            nextTemp = initialTemp - 1
+            return lastTemp
+        }
     }
 
     inner class ScoreProvider internal constructor(private val value: Int) {
