@@ -1,3 +1,4 @@
+@file:Suppress("FunctionName")
 package dev.intsuc.datapacks
 
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -36,6 +37,7 @@ class FunctionProvider internal constructor(private val block: FunctionBuilder.(
 
 class FunctionBuilder internal constructor(private val name: String) {
     private val commands: MutableList<String> = mutableListOf()
+    private var tempSize: Int = 0
 
     operator fun invoke() = +"function $name"
 
@@ -48,25 +50,59 @@ class FunctionBuilder internal constructor(private val name: String) {
     inner class Score internal constructor(val name: String) {
         operator fun getValue(thisRef: Any?, property: KProperty<*>): Score = this
 
-        operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Score) = +"scoreboard players operation #${property.name} _ = #${value.name} _"
+        operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Score) = +"scoreboard players operation $this _ = $value _"
 
-        operator fun plusAssign(value: Int) = +"scoreboard players add #$name _ $value"
+        operator fun plusAssign(source: Score) = +"scoreboard players operation $this _ += $source _"
 
-        operator fun minusAssign(value: Int) = +"scoreboard players remove #$name _ $value"
+        operator fun minusAssign(source: Score) = +"scoreboard players operation $this _ -= $source _"
+
+        operator fun timesAssign(source: Score) = +"scoreboard players operation $this _ *= $source _"
+
+        operator fun divAssign(source: Score) = +"scoreboard players operation $this _ /= $source _"
+
+        operator fun remAssign(source: Score) = +"scoreboard players operation $this _ %= $source _"
+
+        infix fun `min=`(source: Score) = +"scoreboard players operation $this _ < $source _"
+
+        infix fun `max=`(source: Score) = +"scoreboard players operation $this _ > $source _"
+
+        infix fun swap(source: Score) = +"scoreboard players operation $this _ >< $source _"
+
+        infix fun `=`(value: Int) = run { +"scoreboard players set $this _ $value" }
+
+        operator fun plusAssign(value: Int) = +"scoreboard players add $this _ $value"
+
+        operator fun minusAssign(value: Int) = +"scoreboard players remove $this _ $value"
+
+        operator fun timesAssign(value: Int) = useTemp { it `=` value; this *= it }
+
+        operator fun divAssign(value: Int) = useTemp { it `=` value; this /= it }
+
+        operator fun remAssign(value: Int) = useTemp { it `=` value; this %= it }
+
+        infix fun `min=`(value: Int) = useTemp { it `=` value; this `min=` it }
+
+        infix fun `max=`(value: Int) = useTemp { it `=` value; this `max=` it }
+
+        private inline fun useTemp(block: (Score) -> Unit) {
+            val temp = Score(tempSize.toString())
+            tempSize += 1
+            block(temp)
+            tempSize -= 1
+        }
+
+        override fun toString(): String = "#$name"
     }
 
     inner class ScoreProvider internal constructor(private val value: Int) {
-        operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): Score {
-            +"scoreboard players set #${property.name} _ $value"
-            return Score(property.name)
+        operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): Score = Score(property.name).also {
+            +"scoreboard players set $it _ $value"
         }
     }
 
     internal fun build(block: (String) -> Unit) = commands.forEach(block)
 
-    private operator fun String.unaryPlus() {
-        commands.add(this)
-    }
+    private operator fun String.unaryPlus(): Unit = run { commands.add(this) }
 }
 
 private const val DATA_PACK_FORMAT: Int = 64
