@@ -32,9 +32,9 @@ val helloWorld by function {
     val c by score(30)
     val d by score(40)
     b = score { a * b + c * d }
-    say("_")
+    !"comment 1"
     b = score { a + b * c - d / a % b min c max d }
-    say("_")
+    !"comment 2"
     b = score { a + score { b + score { c + d } + a } + b }
 
     this()

@@ -40,6 +40,8 @@ class FunctionBuilder internal constructor(private val name: String) {
     private val commands: MutableList<String> = mutableListOf()
     private var nextTemp: Int = 0
 
+    operator fun String.not() = +"# $this"
+
     operator fun invoke() = +"function $name"
 
     operator fun Function.invoke() = +"function $name"
