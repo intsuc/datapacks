@@ -1,5 +1,10 @@
 package dev.intsuc.datapacks
 
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonObject
 import java.io.Closeable
 import java.io.Writer
 import java.nio.file.Path
@@ -14,7 +19,34 @@ interface PackWriter : Closeable {
 
     fun write(text: String)
 
+    fun write() = use {
+        metadata()
+        while (Function.entries.isNotEmpty()) {
+            val function = Function.entries.removeLast()
+            entry("data/minecraft/function/${function.name}.mcfunction")
+            FunctionBuilder(function.name).apply(function.block).build(this::write)
+        }
+    }
+
+    private fun PackWriter.metadata() {
+        entry("pack.mcmeta")
+        write(json.encodeToString(buildJsonObject {
+            putJsonObject("pack") {
+                put("description", "")
+                put("pack_format", DATA_PACK_FORMAT)
+            }
+        }))
+    }
+
     companion object {
+        private const val DATA_PACK_FORMAT: Int = 66
+
+        @OptIn(ExperimentalSerializationApi::class)
+        private val json: Json = Json {
+            prettyPrint = true
+            prettyPrintIndent = "  "
+        }
+
         fun ofFile(path: Path): PackWriter = object : PackWriter {
             private val output = ZipOutputStream(path.outputStream().buffered())
 
