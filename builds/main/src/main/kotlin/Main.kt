@@ -1,7 +1,5 @@
+import dev.intsuc.datapacks.*
 import dev.intsuc.datapacks.Function
-import dev.intsuc.datapacks.PackWriter
-import dev.intsuc.datapacks.function
-import dev.intsuc.datapacks.write
 import kotlin.io.path.Path
 
 val helloWorld by function {
@@ -43,6 +41,17 @@ val helloWorld by function {
 
 val f: Function by function {
     helloWorld()
+    CompileTimeFunction("foo")()
+    CompileTimeFunction("bar")()
+    CompileTimeFunction2("baz", 3)()
+}
+
+val CompileTimeFunction by metaFunction<String> { message ->
+    say(message)
+}
+
+val CompileTimeFunction2 by metaFunction<String, Int> { message, count ->
+    say(message.repeat(count))
 }
 
 fun main(args: Array<String>) = PackWriter.ofPath(Path(args.first())).write()

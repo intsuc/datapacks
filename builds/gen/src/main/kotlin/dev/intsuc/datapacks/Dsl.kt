@@ -9,9 +9,38 @@ import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject
 import kotlin.reflect.KProperty
 
+private const val DATA_PACK_FORMAT: Int = 64
+
+@OptIn(ExperimentalSerializationApi::class)
+private val json: Json = Json {
+    prettyPrint = true
+    prettyPrintIndent = "  "
+}
+
+@OptIn(ExperimentalSerializationApi::class)
+private fun PackWriter.metadata() {
+    entry("pack.mcmeta")
+    write(json.encodeToString(buildJsonObject {
+        putJsonObject("pack") {
+            put("description", "")
+            put("pack_format", DATA_PACK_FORMAT)
+        }
+    }))
+}
+
+@OptIn(ExperimentalSerializationApi::class)
+fun PackWriter.write() = use {
+    metadata()
+    while (Function.entries.isNotEmpty()) {
+        val function = Function.entries.removeLast()
+        entry("data/minecraft/function/${function.name}.mcfunction")
+        FunctionBuilder(function.name).apply(function.block).build(this::write)
+    }
+}
+
 class Function internal constructor(
     val name: String,
-    private val block: FunctionBuilder.() -> Unit,
+    internal val block: FunctionBuilder.() -> Unit,
 ) {
     init {
         entries.add(this)
@@ -19,20 +48,8 @@ class Function internal constructor(
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): Function = this
 
-    internal fun generate(writer: PackWriter) {
-        writer.entry("data/minecraft/function/$name.mcfunction")
-        FunctionBuilder(name).apply(block).build(writer::write)
-    }
-
     companion object {
         internal val entries: MutableList<Function> = mutableListOf()
-    }
-}
-
-class FunctionProvider internal constructor(private val block: FunctionBuilder.() -> Unit) {
-    operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): Function {
-        val name = "${thisRef?.javaClass?.name?.let { "$it/" } ?: ""}${property.name}".snakecase()
-        return Function(name, block)
     }
 }
 
@@ -137,31 +154,32 @@ class FunctionBuilder internal constructor(private val name: String) {
     private operator fun String.unaryPlus(): Unit = run { commands.add(this) }
 }
 
-private const val DATA_PACK_FORMAT: Int = 64
-
-@OptIn(ExperimentalSerializationApi::class)
-private val json: Json = Json {
-    prettyPrint = true
-    prettyPrintIndent = "  "
-}
-
-@OptIn(ExperimentalSerializationApi::class)
-private fun PackWriter.metadata() {
-    entry("pack.mcmeta")
-    write(json.encodeToString(buildJsonObject {
-        putJsonObject("pack") {
-            put("description", "")
-            put("pack_format", DATA_PACK_FORMAT)
-        }
-    }))
-}
-
-@OptIn(ExperimentalSerializationApi::class)
-fun PackWriter.write() = use {
-    metadata()
-    while (Function.entries.isNotEmpty()) {
-        Function.entries.removeLast().generate(this)
-    }
+class FunctionProvider internal constructor(private val block: FunctionBuilder.() -> Unit) {
+    operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): Function = Function(functionName(thisRef, property), block)
 }
 
 fun function(block: FunctionBuilder.() -> Unit): FunctionProvider = FunctionProvider(block)
+
+class MetaFunctionProvider1<A1> internal constructor(private val block: FunctionBuilder.(A1) -> Unit) {
+    inner class F(private val name: String) : (A1) -> Function {
+        operator fun getValue(thisRef: Any?, property: KProperty<*>): F = this
+        override fun invoke(a1: A1): Function = Function("$name/$a1") { block(a1) }
+    }
+
+    operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): F = F(functionName(thisRef, property))
+}
+
+fun <A1> metaFunction(block: FunctionBuilder.(A1) -> Unit): MetaFunctionProvider1<A1> = MetaFunctionProvider1(block)
+
+class MetaFunctionProvider2<A1, A2> internal constructor(private val block: FunctionBuilder.(A1, A2) -> Unit) {
+    inner class F(private val name: String) : (A1, A2) -> Function {
+        operator fun getValue(thisRef: Any?, property: KProperty<*>): F = this
+        override fun invoke(a1: A1, a2: A2): Function = Function("$name/$a1/$a2") { block(a1, a2) }
+    }
+
+    operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): F = F(functionName(thisRef, property))
+}
+
+fun <A1, A2> metaFunction(block: FunctionBuilder.(A1, A2) -> Unit): MetaFunctionProvider2<A1, A2> = MetaFunctionProvider2(block)
+
+private fun functionName(thisRef: Any?, property: KProperty<*>): String = "${thisRef?.javaClass?.name?.let { "$it/" } ?: ""}${property.name}".snakecase()
