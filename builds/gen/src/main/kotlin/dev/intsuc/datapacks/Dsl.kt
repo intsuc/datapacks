@@ -85,8 +85,18 @@ class Score internal constructor(private val c: FunctionContext, val name: Strin
     infix fun `max=`(source: Score) = +"scoreboard players operation $this _ > $source _"
     infix fun swap(source: Score) = +"scoreboard players operation $this _ >< $source _"
     infix fun `=`(value: Int) = +"scoreboard players set $this _ $value"
-    operator fun plusAssign(value: Int) = +"scoreboard players add $this _ $value"
-    operator fun minusAssign(value: Int) = +"scoreboard players remove $this _ $value"
+    operator fun plusAssign(value: Int): Unit = when {
+        value >= 0 -> +"scoreboard players add $this _ $value"
+        value == Int.MIN_VALUE -> useTemp { it `=` value; this += it }
+        else -> run { this -= -value }
+    }
+
+    operator fun minusAssign(value: Int): Unit = when {
+        value >= 0 -> +"scoreboard players remove $this _ $value"
+        value == Int.MIN_VALUE -> useTemp { it `=` value; this -= it }
+        else -> run { this += -value }
+    }
+
     operator fun timesAssign(value: Int) = useTemp { it `=` value; this *= it }
     operator fun divAssign(value: Int) = useTemp { it `=` value; this /= it }
     operator fun remAssign(value: Int) = useTemp { it `=` value; this %= it }

@@ -27,8 +27,14 @@ val helloWorld by function {
     b `min=` 6
     b `max=` 7
 
-    val c by score(30)
-    val d by score(40)
+    b += Int.MAX_VALUE
+    b += Int.MIN_VALUE
+    b += -1
+
+    b -= Int.MAX_VALUE
+    b -= Int.MIN_VALUE
+    b -= -1
+
     !"comment"
 
     this()
