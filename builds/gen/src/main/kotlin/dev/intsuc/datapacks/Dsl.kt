@@ -17,9 +17,24 @@ class FunctionContext internal constructor(internal val name: String) {
 
     fun Storage.merge(nbt: CompoundNbt) = +"data merge storage $this $nbt"
     fun Storage.merge(block: CompoundNbtBuilder.() -> Unit) = merge(CompoundNbtBuilder().apply(block).build())
-    fun NbtPath.get() = add("data get storage $storage $this")
-    fun NbtPath.get(scale: Double) = add("data get storage $storage $this $scale")
-    fun NbtPath.remove() = add("data remove storage $storage $this")
+    fun NbtPath.get() = add("data get $this")
+    fun NbtPath.get(scale: Double) = add("data get $this $scale")
+    fun NbtPath.remove() = add("data remove $this")
+    fun NbtPath.append(from: NbtPath, stringify: Boolean = false) = add("data modify $this append ${if (stringify) "string" else "from"} $from")
+    fun NbtPath.append(value: Nbt) = add("data modify $this append value $value")
+    fun NbtPath.append(block: CompoundNbtBuilder.() -> Unit) = append(CompoundNbtBuilder().apply(block).build())
+    fun NbtPath.prepend(from: NbtPath, stringify: Boolean = false) = add("data modify $this prepend ${if (stringify) "string" else "from"} $from")
+    fun NbtPath.prepend(value: Nbt) = add("data modify $this prepend value $value")
+    fun NbtPath.prepend(block: CompoundNbtBuilder.() -> Unit) = prepend(CompoundNbtBuilder().apply(block).build())
+    fun NbtPath.insert(index: Int, from: NbtPath, stringify: Boolean = false) = add("data modify $this insert $index ${if (stringify) "string" else "from"} $from")
+    fun NbtPath.insert(index: Int, value: Nbt) = add("data modify $this insert $index value $value")
+    fun NbtPath.insert(index: Int, block: CompoundNbtBuilder.() -> Unit) = insert(index, CompoundNbtBuilder().apply(block).build())
+    fun NbtPath.set(from: NbtPath, stringify: Boolean = false) = add("data modify $this set ${if (stringify) "string" else "from"} $from")
+    fun NbtPath.set(value: Nbt) = add("data modify $this set value $value")
+    fun NbtPath.set(block: CompoundNbtBuilder.() -> Unit) = set(CompoundNbtBuilder().apply(block).build())
+    fun NbtPath.merge(from: NbtPath, stringify: Boolean = false) = add("data modify $this merge ${if (stringify) "string" else "from"} $from")
+    fun NbtPath.merge(value: Nbt) = add("data modify $this merge value $value")
+    fun NbtPath.merge(block: CompoundNbtBuilder.() -> Unit) = merge(CompoundNbtBuilder().apply(block).build())
 
     internal fun build(block: (String) -> Unit) = commands.forEach(block)
 
@@ -97,15 +112,8 @@ fun compound(block: CompoundNbtBuilder.() -> Unit): CompoundNbt = CompoundNbtBui
 
 class Storage internal constructor(val name: String) {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): Storage = this
-    fun all(): NbtPath = NbtPath(name, AllElementsNode)
     fun at(name: String): NbtPath = NbtPath(name, CompoundChildNode(name))
     fun at(vararg names: String): NbtPath = NbtPath(name, names.map(::CompoundChildNode))
-    fun at(index: Int): NbtPath = NbtPath(name, IndexedElementNode(index))
-    fun at(vararg indexes: Int): NbtPath = NbtPath(name, indexes.map(::IndexedElementNode))
-    fun first(): NbtPath = at(0)
-    fun last(): NbtPath = at(-1)
-    fun filterList(pattern: CompoundNbt): NbtPath = NbtPath(name, MatchElementNode(pattern))
-    fun filterList(block: CompoundNbtBuilder.() -> Unit): NbtPath = filterList(CompoundNbtBuilder().apply(block).build())
     fun filterCompound(name: String, pattern: CompoundNbt): NbtPath = NbtPath(name, MatchObjectNode(name, pattern))
     fun filterCompound(name: String, block: CompoundNbtBuilder.() -> Unit): NbtPath = filterCompound(name, CompoundNbtBuilder().apply(block).build())
     fun filterCompound(pattern: CompoundNbt): NbtPath = NbtPath(name, MatchRootNode(pattern))
@@ -134,7 +142,8 @@ data class NbtPath(val storage: String, val nodes: List<NbtPathNode>) {
     fun filterList(block: CompoundNbtBuilder.() -> Unit): NbtPath = filterList(CompoundNbtBuilder().apply(block).build())
     fun filterCompound(name: String, pattern: CompoundNbt): NbtPath = NbtPath(storage, nodes + MatchObjectNode(name, pattern))
     fun filterCompound(name: String, block: CompoundNbtBuilder.() -> Unit): NbtPath = filterCompound(name, CompoundNbtBuilder().apply(block).build())
-    override fun toString(): String = nodes.joinToString(".")
+
+    override fun toString(): String = "storage $storage ${nodes.joinToString(".")}"
 }
 
 sealed interface NbtPathNode

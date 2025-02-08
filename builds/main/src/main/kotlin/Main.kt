@@ -60,9 +60,14 @@ val helloWorld by function {
         .remove()
 
     val localStorage by storage()
-    val path = localStorage.at(1, 2).at("a", "b").first().last()
+    val path = localStorage.at("a", "b").at(1, 2).first().last()
     path.get()
     path.get(2.0)
+    path.append(localStorage.at("a"))
+    path.append(localStorage.at("a"), true)
+    path.append(c)
+    path.append { "a"(1) }
+    path.insert(2) { "a"(1) }
 
     this()
     f()
