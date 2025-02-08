@@ -20,6 +20,58 @@ class FunctionContext internal constructor(internal val name: String) {
     private operator fun String.unaryPlus() = add(this)
 }
 
+sealed interface Tag {
+    override fun toString(): String
+}
+
+data class ByteTag(val value: Byte) : Tag {
+    override fun toString(): String = "${value}b"
+}
+
+data class ShortTag(val value: Short) : Tag {
+    override fun toString(): String = "${value}s"
+}
+
+data class IntTag(val value: Int) : Tag {
+    override fun toString(): String = "$value"
+}
+
+data class LongTag(val value: Long) : Tag {
+    override fun toString(): String = "${value}l"
+}
+
+data class FloatTag(val value: Float) : Tag {
+    override fun toString(): String = "${value}f"
+}
+
+data class DoubleTag(val value: Double) : Tag {
+    override fun toString(): String = "${value}d"
+}
+
+data class ByteArrayTag(val elements: List<Byte>) : Tag {
+    override fun toString(): String = elements.joinToString("[B;", ",", "]") { "${it}b" }
+}
+
+data class StringTag(val value: String) : Tag {
+    override fun toString(): String = "\"${value.replace("\"", "\\\"")}\""
+}
+
+data class ListTag(val elements: List<Tag>) : Tag {
+    override fun toString(): String = elements.joinToString("[", ",", "]")
+}
+
+data class CompoundTag(val elements: Map<String, Tag>) : Tag {
+    override fun toString(): String = elements.entries.joinToString("{", ",", "}") { (key, value) -> "$key:$value" }
+}
+
+data class IntArrayTag(val elements: List<Int>) : Tag {
+    override fun toString(): String = elements.joinToString("[I;", ",", "]")
+}
+
+data class LongArrayTag(val elements: List<Long>) : Tag {
+    override fun toString(): String = elements.joinToString("[L;", ",", "]") { "${it}l" }
+}
+
 class Score internal constructor(private val c: FunctionContext, val name: String) {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): Score = this
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Score) = +"scoreboard players operation $this _ = $value _"
