@@ -1,6 +1,9 @@
 import dev.intsuc.datapacks.*
 import dev.intsuc.datapacks.Function
+import dev.intsuc.datapacks.storage
 import kotlin.io.path.Path
+
+val globalStorage by storage()
 
 val helloWorld by function {
     say("Hello, world!")
@@ -37,20 +40,27 @@ val helloWorld by function {
 
     !"comment"
 
-    val s by storage()
-    s.merge(CompoundNbt(emptyMap()))
-    s
-        .filterCompound(CompoundNbt(emptyMap()))
+    val c = compound {
+        "a"(1)
+        "b" {
+            "c"(2)
+        }
+    }
+
+    globalStorage.merge(c)
+    globalStorage.merge { }
+    globalStorage
+        .filterCompound {}
         .all()
         .at("a")
         .at(0)
         .at(-1)
-        .filterList(CompoundNbt(emptyMap()))
-        .filterCompound("b", CompoundNbt(emptyMap()))
+        .filterList {}
+        .filterCompound("b") {}
         .remove()
 
-    val t by storage()
-    val path = t.at(1, 2).at("a", "b").first().last()
+    val localStorage by storage()
+    val path = localStorage.at(1, 2).at("a", "b").first().last()
     path.get()
     path.get(2.0)
 

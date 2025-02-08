@@ -15,6 +15,8 @@ class FunctionContext internal constructor(internal val name: String) {
     operator fun Function.invoke() = +"function $name"
     fun say(message: String) = +"say $message"
 
+    fun Storage.merge(nbt: CompoundNbt) = +"data merge storage $this $nbt"
+    fun Storage.merge(block: CompoundNbtBuilder.() -> Unit) = merge(CompoundNbtBuilder().apply(block).build())
     fun NbtPath.get() = add("data get storage $storage $this")
     fun NbtPath.get(scale: Double) = add("data get storage $storage $this $scale")
     fun NbtPath.remove() = add("data remove storage $storage $this")
@@ -77,9 +79,24 @@ data class LongArrayNbt(val elements: List<Long>) : Nbt {
     override fun toString(): String = elements.joinToString(",", "[L;", "]") { "${it}l" }
 }
 
-class Storage internal constructor(private val c: FunctionContext, val name: String) {
+class CompoundNbtBuilder {
+    private val elements: MutableMap<String, Nbt> = mutableMapOf()
+    operator fun String.invoke(nbt: Nbt) = elements.put(this, nbt)
+    operator fun String.invoke(value: Byte) = elements.put(this, ByteNbt(value))
+    operator fun String.invoke(value: Short) = elements.put(this, ShortNbt(value))
+    operator fun String.invoke(value: Int) = elements.put(this, IntNbt(value))
+    operator fun String.invoke(value: Long) = elements.put(this, LongNbt(value))
+    operator fun String.invoke(value: Float) = elements.put(this, FloatNbt(value))
+    operator fun String.invoke(value: Double) = elements.put(this, DoubleNbt(value))
+    operator fun String.invoke(value: String) = elements.put(this, StringNbt(value))
+    operator fun String.invoke(block: CompoundNbtBuilder.() -> Unit) = elements.put(this, CompoundNbtBuilder().apply(block).build())
+    fun build(): CompoundNbt = CompoundNbt(elements)
+}
+
+fun compound(block: CompoundNbtBuilder.() -> Unit): CompoundNbt = CompoundNbtBuilder().apply(block).build()
+
+class Storage internal constructor(val name: String) {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): Storage = this
-    fun merge(nbt: CompoundNbt) = +"data merge storage $this $nbt"
     fun all(): NbtPath = NbtPath(name, AllElementsNode)
     fun at(name: String): NbtPath = NbtPath(name, CompoundChildNode(name))
     fun at(vararg names: String): NbtPath = NbtPath(name, names.map(::CompoundChildNode))
@@ -88,21 +105,24 @@ class Storage internal constructor(private val c: FunctionContext, val name: Str
     fun first(): NbtPath = at(0)
     fun last(): NbtPath = at(-1)
     fun filterList(pattern: CompoundNbt): NbtPath = NbtPath(name, MatchElementNode(pattern))
+    fun filterList(block: CompoundNbtBuilder.() -> Unit): NbtPath = filterList(CompoundNbtBuilder().apply(block).build())
     fun filterCompound(name: String, pattern: CompoundNbt): NbtPath = NbtPath(name, MatchObjectNode(name, pattern))
+    fun filterCompound(name: String, block: CompoundNbtBuilder.() -> Unit): NbtPath = filterCompound(name, CompoundNbtBuilder().apply(block).build())
     fun filterCompound(pattern: CompoundNbt): NbtPath = NbtPath(name, MatchRootNode(pattern))
+    fun filterCompound(block: CompoundNbtBuilder.() -> Unit): NbtPath = filterCompound(CompoundNbtBuilder().apply(block).build())
 
-    operator fun String.unaryPlus() = c.add(this)
     override fun toString(): String = name
 }
 
-class StorageProvider internal constructor(private val c: FunctionContext) {
-    operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): Storage = Storage(c, resourceLocation(thisRef, property))
+class StorageProvider internal constructor() {
+    operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): Storage = Storage(resourceLocation(thisRef, property))
 }
 
-fun FunctionContext.storage() = StorageProvider(this)
+fun storage() = StorageProvider()
 
 data class NbtPath(val storage: String, val nodes: List<NbtPathNode>) {
     constructor(name: String, vararg nodes: NbtPathNode) : this(name, nodes.toList())
+
     fun all(): NbtPath = NbtPath(storage, nodes + AllElementsNode)
     fun at(name: String): NbtPath = NbtPath(storage, nodes + CompoundChildNode(name))
     fun at(vararg names: String): NbtPath = NbtPath(storage, nodes + names.map(::CompoundChildNode))
@@ -111,7 +131,9 @@ data class NbtPath(val storage: String, val nodes: List<NbtPathNode>) {
     fun first(): NbtPath = at(0)
     fun last(): NbtPath = at(-1)
     fun filterList(pattern: CompoundNbt): NbtPath = NbtPath(storage, nodes + MatchElementNode(pattern))
+    fun filterList(block: CompoundNbtBuilder.() -> Unit): NbtPath = filterList(CompoundNbtBuilder().apply(block).build())
     fun filterCompound(name: String, pattern: CompoundNbt): NbtPath = NbtPath(storage, nodes + MatchObjectNode(name, pattern))
+    fun filterCompound(name: String, block: CompoundNbtBuilder.() -> Unit): NbtPath = filterCompound(name, CompoundNbtBuilder().apply(block).build())
     override fun toString(): String = nodes.joinToString(".")
 }
 
@@ -173,7 +195,7 @@ class Score internal constructor(private val c: FunctionContext, val name: Strin
     infix fun `max=`(value: Int) = useTemp { it `=` value; this `max=` it }
     override fun toString(): String = "#$name"
 
-    private inline fun useTemp(block: (Score) -> Unit) {
+    private fun useTemp(block: (Score) -> Unit) {
         val score = Score(c, c.nextScore++.toString())
         block(score)
         c.nextScore--
