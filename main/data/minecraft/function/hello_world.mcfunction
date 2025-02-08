@@ -34,7 +34,7 @@ scoreboard players add #b _ 1
 # comment
 data merge storage s {}
 data remove storage s {}.[].a.[0].[-1].[{}].b{}
-data get storage t a.b.[1].[2]
-data get storage t a.b.[1].[2] 2.0
+data get storage t [1].[2].a.b.[0].[-1]
+data get storage t [1].[2].a.b.[0].[-1] 2.0
 function hello_world
 function f
