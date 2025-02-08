@@ -4,9 +4,10 @@ package dev.intsuc.datapacks
 
 import kotlin.reflect.KProperty
 
-class FunctionContext internal constructor(private val name: String) {
+class FunctionContext internal constructor(internal val name: String) {
     private val commands: MutableList<String> = mutableListOf()
-    internal var nextTemp: Int = 0
+    internal var nextFunction: Int = 0
+    internal var nextScore: Int = 0
 
     operator fun String.not() = +"# $this"
     operator fun invoke() = +"function $name"
@@ -42,10 +43,9 @@ class Score internal constructor(private val c: FunctionContext, val name: Strin
     override fun toString(): String = "#$name"
 
     private inline fun useTemp(block: (Score) -> Unit) {
-        val score = Score(c, c.nextTemp.toString())
-        c.nextTemp += 1
+        val score = Score(c, c.nextScore++.toString())
         block(score)
-        c.nextTemp -= 1
+        c.nextScore--
     }
 
     private operator fun String.unaryPlus() = c.add(this)
@@ -68,6 +68,7 @@ class Function internal constructor(
     }
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): Function = this
+    override fun toString(): String = name
 
     companion object {
         internal val entries: MutableList<Function> = mutableListOf()
@@ -79,6 +80,8 @@ class FunctionProvider internal constructor(private val block: FunctionContext.(
 }
 
 fun function(block: FunctionContext.() -> Unit): FunctionProvider = FunctionProvider(block)
+
+fun FunctionContext.function(block: FunctionContext.() -> Unit): Function = Function("$name/${nextFunction++}", block)
 
 class MetaFunctionProvider1<A1> internal constructor(private val block: FunctionContext.(A1) -> Unit) {
     operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): F = F(functionName(thisRef, property))

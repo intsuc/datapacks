@@ -40,6 +40,10 @@ val f: Function by function {
     CompileTimeFunction("foo")()
     CompileTimeFunction("bar")()
     CompileTimeFunction2("baz", 3)()
+    HigherOrderFunction(CompileTimeFunction("a"))()
+    HigherOrderFunction(CompileTimeFunction("b"))()
+    HigherOrderFunction(function { say("c") })()
+    HigherOrderFunction(function { say("d") })()
 }
 
 val CompileTimeFunction by metaFunction<String> { message ->
@@ -48,6 +52,12 @@ val CompileTimeFunction by metaFunction<String> { message ->
 
 val CompileTimeFunction2 by metaFunction<String, Int> { message, count ->
     say(message.repeat(count))
+}
+
+val HigherOrderFunction by metaFunction<Function> { f ->
+    say("begin")
+    f()
+    say("end")
 }
 
 fun main(args: Array<String>) = PackWriter.ofPath(Path(args.first())).write()
