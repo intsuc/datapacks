@@ -50,7 +50,7 @@ val helloWorld by function {
         .remove()
 
     val t by storage()
-    val path = t.at("a", "b").at(1, 2)
+    val path = t.at(1, 2).at("a", "b").first().last()
     path.get()
     path.get(2.0)
 
