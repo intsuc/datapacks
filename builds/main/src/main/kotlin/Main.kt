@@ -39,7 +39,7 @@ val f: Function by function {
     helloWorld()
     CompileTimeFunction("foo")()
     CompileTimeFunction("bar")()
-    CompileTimeFunction2("baz", 3)()
+    CompileTimeFunction2("baz", 2)()
     HigherOrderFunction(CompileTimeFunction("a"))()
     HigherOrderFunction(CompileTimeFunction("b"))()
     HigherOrderFunction(function { say("c") })()

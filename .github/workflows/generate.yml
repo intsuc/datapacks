@@ -20,9 +20,9 @@ jobs:
           java-version: "23"
       - uses: gradle/actions/setup-gradle@v4
       - run: |
+          git worktree add generated generated
           git config user.name "intsuc"
           git config user.email ""
-          git worktree add generated generated
           ./gradlew :main:run --args="generated/main"
           cd generated
           git add .
