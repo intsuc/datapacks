@@ -19,4 +19,12 @@ jobs:
           distribution: "graalvm"
           java-version: "23"
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew :main:run --args="build/main"
+      - run: |
+          git config user.name "intsuc"
+          git config user.email ""
+          git worktree add generated generated
+          ./gradlew :main:run --args="generated/main"
+          cd generated
+          git add .
+          git commit -m "Update"
+          git push
