@@ -35,7 +35,12 @@ scoreboard players add #b _ 1
 data merge storage global_storage {a:1,b:{c:2}}
 data merge storage global_storage {}
 data remove storage global_storage {}.[].a.[0].[-1].[{}].b{}
-data get storage local_storage [1].[2].a.b.[0].[-1]
-data get storage local_storage [1].[2].a.b.[0].[-1] 2.0
+data get storage local_storage a.b.[1].[2].[0].[-1]
+data get storage local_storage a.b.[1].[2].[0].[-1] 2.0
+data modify storage local_storage a.b.[1].[2].[0].[-1] append from storage a a
+data modify storage local_storage a.b.[1].[2].[0].[-1] append string storage a a
+data modify storage local_storage a.b.[1].[2].[0].[-1] append value {a:1,b:{c:2}}
+data modify storage local_storage a.b.[1].[2].[0].[-1] append value {a:1}
+data modify storage local_storage a.b.[1].[2].[0].[-1] insert 2 value {a:1}
 function hello_world
 function f
