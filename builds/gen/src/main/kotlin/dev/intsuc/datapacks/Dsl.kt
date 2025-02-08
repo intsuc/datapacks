@@ -112,9 +112,9 @@ fun compound(block: CompoundNbtBuilder.() -> Unit): CompoundNbt = CompoundNbtBui
 
 class Storage internal constructor(val name: String) {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): Storage = this
-    fun at(name: String): NbtPath = NbtPath(name, CompoundChildNode(name))
+    fun at(name: String): NbtPath = NbtPath(this.name, CompoundChildNode(name))
     fun at(vararg names: String): NbtPath = NbtPath(name, names.map(::CompoundChildNode))
-    fun filterCompound(name: String, pattern: CompoundNbt): NbtPath = NbtPath(name, MatchObjectNode(name, pattern))
+    fun filterCompound(name: String, pattern: CompoundNbt): NbtPath = NbtPath(this.name, MatchObjectNode(name, pattern))
     fun filterCompound(name: String, block: CompoundNbtBuilder.() -> Unit): NbtPath = filterCompound(name, CompoundNbtBuilder().apply(block).build())
     fun filterCompound(pattern: CompoundNbt): NbtPath = NbtPath(name, MatchRootNode(pattern))
     fun filterCompound(block: CompoundNbtBuilder.() -> Unit): NbtPath = filterCompound(CompoundNbtBuilder().apply(block).build())
