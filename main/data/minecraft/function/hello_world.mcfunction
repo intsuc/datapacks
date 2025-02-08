@@ -32,9 +32,10 @@ scoreboard players set #0 _ -2147483648
 scoreboard players operation #b _ -= #0 _
 scoreboard players add #b _ 1
 # comment
-data merge storage s {}
-data remove storage s {}.[].a.[0].[-1].[{}].b{}
-data get storage t [1].[2].a.b.[0].[-1]
-data get storage t [1].[2].a.b.[0].[-1] 2.0
+data merge storage global_storage {a:1,b:{c:2}}
+data merge storage global_storage {}
+data remove storage global_storage {}.[].a.[0].[-1].[{}].b{}
+data get storage local_storage [1].[2].a.b.[0].[-1]
+data get storage local_storage [1].[2].a.b.[0].[-1] 2.0
 function hello_world
 function f
