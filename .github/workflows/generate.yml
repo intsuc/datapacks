@@ -25,7 +25,7 @@ jobs:
           git worktree add generated generated
           git config user.name "intsuc"
           git config user.email ""
-          ./gradlew :main:run --args="generated/main"
+          ./gradlew :main:run --args="../../generated/main"
           cd generated
           git add .
           git commit -m "Update"
