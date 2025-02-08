@@ -1,0 +1,8 @@
+function hello_world
+function compile_time_function/foo
+function compile_time_function/bar
+function compile_time_function2/baz/3
+function higher_order_function/compile_time_function/a
+function higher_order_function/compile_time_function/b
+function higher_order_function/f/0
+function higher_order_function/f/1
