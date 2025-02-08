@@ -2,6 +2,7 @@
 
 package dev.intsuc.datapacks
 
+import kotlin.collections.plus
 import kotlin.reflect.KProperty
 
 class FunctionContext internal constructor(internal val name: String) {
@@ -14,62 +15,126 @@ class FunctionContext internal constructor(internal val name: String) {
     operator fun Function.invoke() = +"function $name"
     fun say(message: String) = +"say $message"
 
+    fun NbtPath.get() = add("data get storage $storage $this")
+    fun NbtPath.get(scale: Double) = add("data get storage $storage $this $scale")
+    fun NbtPath.remove() = add("data remove storage $storage $this")
+
     internal fun build(block: (String) -> Unit) = commands.forEach(block)
 
     internal fun add(command: String): Unit = run { commands.add(command) }
     private operator fun String.unaryPlus() = add(this)
 }
 
-sealed interface Tag {
+sealed interface Nbt {
     override fun toString(): String
 }
 
-data class ByteTag(val value: Byte) : Tag {
+data class ByteNbt(val value: Byte) : Nbt {
     override fun toString(): String = "${value}b"
 }
 
-data class ShortTag(val value: Short) : Tag {
+data class ShortNbt(val value: Short) : Nbt {
     override fun toString(): String = "${value}s"
 }
 
-data class IntTag(val value: Int) : Tag {
+data class IntNbt(val value: Int) : Nbt {
     override fun toString(): String = "$value"
 }
 
-data class LongTag(val value: Long) : Tag {
+data class LongNbt(val value: Long) : Nbt {
     override fun toString(): String = "${value}l"
 }
 
-data class FloatTag(val value: Float) : Tag {
+data class FloatNbt(val value: Float) : Nbt {
     override fun toString(): String = "${value}f"
 }
 
-data class DoubleTag(val value: Double) : Tag {
+data class DoubleNbt(val value: Double) : Nbt {
     override fun toString(): String = "${value}d"
 }
 
-data class ByteArrayTag(val elements: List<Byte>) : Tag {
-    override fun toString(): String = elements.joinToString("[B;", ",", "]") { "${it}b" }
+data class ByteArrayNbt(val elements: List<Byte>) : Nbt {
+    override fun toString(): String = elements.joinToString(",", "[B;", "]") { "${it}b" }
 }
 
-data class StringTag(val value: String) : Tag {
+data class StringNbt(val value: String) : Nbt {
     override fun toString(): String = "\"${value.replace("\"", "\\\"")}\""
 }
 
-data class ListTag(val elements: List<Tag>) : Tag {
-    override fun toString(): String = elements.joinToString("[", ",", "]")
+data class ListNbt(val elements: List<Nbt>) : Nbt {
+    override fun toString(): String = elements.joinToString(",", "[", "]")
 }
 
-data class CompoundTag(val elements: Map<String, Tag>) : Tag {
-    override fun toString(): String = elements.entries.joinToString("{", ",", "}") { (key, value) -> "$key:$value" }
+data class CompoundNbt(val elements: Map<String, Nbt>) : Nbt {
+    override fun toString(): String = elements.entries.joinToString(",", "{", "}") { (key, value) -> "$key:$value" }
 }
 
-data class IntArrayTag(val elements: List<Int>) : Tag {
-    override fun toString(): String = elements.joinToString("[I;", ",", "]")
+data class IntArrayNbt(val elements: List<Int>) : Nbt {
+    override fun toString(): String = elements.joinToString(",", "[I;", "]")
 }
 
-data class LongArrayTag(val elements: List<Long>) : Tag {
-    override fun toString(): String = elements.joinToString("[L;", ",", "]") { "${it}l" }
+data class LongArrayNbt(val elements: List<Long>) : Nbt {
+    override fun toString(): String = elements.joinToString(",", "[L;", "]") { "${it}l" }
+}
+
+class Storage internal constructor(private val c: FunctionContext, val name: String) {
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): Storage = this
+    fun merge(nbt: CompoundNbt) = +"data merge storage $this $nbt"
+    fun all(): NbtPath = NbtPath(name, AllElementsNode)
+    fun at(name: String): NbtPath = NbtPath(name, CompoundChildNode(name))
+    fun at(vararg names: String): NbtPath = NbtPath(name, names.map(::CompoundChildNode))
+    fun at(index: Int): NbtPath = NbtPath(name, IndexedElementNode(index))
+    fun at(vararg indexes: Int): NbtPath = NbtPath(name, indexes.map(::IndexedElementNode))
+    fun filterList(pattern: CompoundNbt): NbtPath = NbtPath(name, MatchElementNode(pattern))
+    fun filterCompound(name: String, pattern: CompoundNbt): NbtPath = NbtPath(name, MatchObjectNode(name, pattern))
+    fun filterCompound(pattern: CompoundNbt): NbtPath = NbtPath(name, MatchRootNode(pattern))
+
+    operator fun String.unaryPlus() = c.add(this)
+    override fun toString(): String = name
+}
+
+class StorageProvider internal constructor(private val c: FunctionContext) {
+    operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): Storage = Storage(c, resourceLocation(thisRef, property))
+}
+
+fun FunctionContext.storage() = StorageProvider(this)
+
+data class NbtPath(val storage: String, val nodes: List<NbtPathNode>) {
+    constructor(name: String, vararg nodes: NbtPathNode) : this(name, nodes.toList())
+    fun all(): NbtPath = NbtPath(storage, nodes + AllElementsNode)
+    fun at(name: String): NbtPath = NbtPath(storage, nodes + CompoundChildNode(name))
+    fun at(vararg names: String): NbtPath = NbtPath(storage, nodes + names.map(::CompoundChildNode))
+    fun at(index: Int): NbtPath = NbtPath(storage, nodes + IndexedElementNode(index))
+    fun at(vararg indexes: Int): NbtPath = NbtPath(storage, nodes + indexes.map(::IndexedElementNode))
+    fun filterList(pattern: CompoundNbt): NbtPath = NbtPath(storage, nodes + MatchElementNode(pattern))
+    fun filterCompound(name: String, pattern: CompoundNbt): NbtPath = NbtPath(storage, nodes + MatchObjectNode(name, pattern))
+    override fun toString(): String = nodes.joinToString(".")
+}
+
+sealed interface NbtPathNode
+
+data object AllElementsNode : NbtPathNode {
+    override fun toString(): String = "[]"
+}
+
+data class CompoundChildNode(val name: String) : NbtPathNode {
+    override fun toString(): String = name
+}
+
+data class IndexedElementNode(val index: Int) : NbtPathNode {
+    override fun toString(): String = "[$index]"
+}
+
+data class MatchElementNode(val pattern: CompoundNbt) : NbtPathNode {
+    override fun toString(): String = "[$pattern]"
+}
+
+data class MatchObjectNode(val name: String, val pattern: CompoundNbt) : NbtPathNode {
+    override fun toString(): String = "$name$pattern"
+}
+
+data class MatchRootNode(val pattern: CompoundNbt) : NbtPathNode {
+    override fun toString(): String = "$pattern"
 }
 
 class Score internal constructor(private val c: FunctionContext, val name: String) {
@@ -138,7 +203,7 @@ class Function internal constructor(
 }
 
 class FunctionProvider internal constructor(private val block: FunctionContext.() -> Unit) {
-    operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): Function = Function(functionName(thisRef, property), block)
+    operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): Function = Function(resourceLocation(thisRef, property), block)
 }
 
 fun function(block: FunctionContext.() -> Unit): FunctionProvider = FunctionProvider(block)
@@ -146,7 +211,7 @@ fun function(block: FunctionContext.() -> Unit): FunctionProvider = FunctionProv
 fun FunctionContext.function(block: FunctionContext.() -> Unit): Function = Function("$name/${nextFunction++}", block)
 
 class MetaFunctionProvider1<A1> internal constructor(private val block: FunctionContext.(A1) -> Unit) {
-    operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): F = F(functionName(thisRef, property))
+    operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): F = F(resourceLocation(thisRef, property))
     inner class F(private val name: String) {
         operator fun getValue(thisRef: Any?, property: KProperty<*>): F = this
         operator fun invoke(a1: A1): Function = Function("$name/$a1") { block(a1) }
@@ -156,7 +221,7 @@ class MetaFunctionProvider1<A1> internal constructor(private val block: Function
 fun <A1> metaFunction(block: FunctionContext.(A1) -> Unit): MetaFunctionProvider1<A1> = MetaFunctionProvider1(block)
 
 class MetaFunctionProvider2<A1, A2> internal constructor(private val block: FunctionContext.(A1, A2) -> Unit) {
-    operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): F = F(functionName(thisRef, property))
+    operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): F = F(resourceLocation(thisRef, property))
     inner class F(private val name: String) {
         operator fun getValue(thisRef: Any?, property: KProperty<*>): F = this
         operator fun invoke(a1: A1, a2: A2): Function = Function("$name/$a1/$a2") { block(a1, a2) }
@@ -165,7 +230,7 @@ class MetaFunctionProvider2<A1, A2> internal constructor(private val block: Func
 
 fun <A1, A2> metaFunction(block: FunctionContext.(A1, A2) -> Unit): MetaFunctionProvider2<A1, A2> = MetaFunctionProvider2(block)
 
-private fun functionName(thisRef: Any?, property: KProperty<*>): String = "${thisRef?.javaClass?.name?.let { "$it/" } ?: ""}${property.name}".snakecase()
+private fun resourceLocation(thisRef: Any?, property: KProperty<*>): String = "${thisRef?.javaClass?.name?.let { "$it/" } ?: ""}${property.name}".snakecase()
 
 private fun String.snakecase(): String {
     val builder = StringBuilder()

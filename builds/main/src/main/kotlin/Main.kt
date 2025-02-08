@@ -37,6 +37,23 @@ val helloWorld by function {
 
     !"comment"
 
+    val s by storage()
+    s.merge(CompoundNbt(emptyMap()))
+    s
+        .filterCompound(CompoundNbt(emptyMap()))
+        .all()
+        .at("a")
+        .at(0)
+        .at(-1)
+        .filterList(CompoundNbt(emptyMap()))
+        .filterCompound("b", CompoundNbt(emptyMap()))
+        .remove()
+
+    val t by storage()
+    val path = t.at("a", "b").at(1, 2)
+    path.get()
+    path.get(2.0)
+
     this()
     f()
 }
