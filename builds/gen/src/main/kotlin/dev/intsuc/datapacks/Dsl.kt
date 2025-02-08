@@ -4,9 +4,64 @@ package dev.intsuc.datapacks
 
 import kotlin.reflect.KProperty
 
+class FunctionContext internal constructor(private val name: String) {
+    private val commands: MutableList<String> = mutableListOf()
+    internal var nextTemp: Int = 0
+
+    operator fun String.not() = +"# $this"
+    operator fun invoke() = +"function $name"
+    operator fun Function.invoke() = +"function $name"
+    fun say(message: String) = +"say $message"
+
+    internal fun build(block: (String) -> Unit) = commands.forEach(block)
+
+    internal fun add(command: String): Unit = run { commands.add(command) }
+    private operator fun String.unaryPlus() = add(this)
+}
+
+class Score internal constructor(private val c: FunctionContext, val name: String) {
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): Score = this
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Score) = +"scoreboard players operation $this _ = $value _"
+    infix fun `=`(source: Score) = if (this !== source) +"scoreboard players set $this _ = $source _" else Unit
+    operator fun plusAssign(source: Score) = +"scoreboard players operation $this _ += $source _"
+    operator fun minusAssign(source: Score) = +"scoreboard players operation $this _ -= $source _"
+    operator fun timesAssign(source: Score) = +"scoreboard players operation $this _ *= $source _"
+    operator fun divAssign(source: Score) = +"scoreboard players operation $this _ /= $source _"
+    operator fun remAssign(source: Score) = +"scoreboard players operation $this _ %= $source _"
+    infix fun `min=`(source: Score) = +"scoreboard players operation $this _ < $source _"
+    infix fun `max=`(source: Score) = +"scoreboard players operation $this _ > $source _"
+    infix fun swap(source: Score) = +"scoreboard players operation $this _ >< $source _"
+    infix fun `=`(value: Int) = +"scoreboard players set $this _ $value"
+    operator fun plusAssign(value: Int) = +"scoreboard players add $this _ $value"
+    operator fun minusAssign(value: Int) = +"scoreboard players remove $this _ $value"
+    operator fun timesAssign(value: Int) = useTemp { it `=` value; this *= it }
+    operator fun divAssign(value: Int) = useTemp { it `=` value; this /= it }
+    operator fun remAssign(value: Int) = useTemp { it `=` value; this %= it }
+    infix fun `min=`(value: Int) = useTemp { it `=` value; this `min=` it }
+    infix fun `max=`(value: Int) = useTemp { it `=` value; this `max=` it }
+    override fun toString(): String = "#$name"
+
+    private inline fun useTemp(block: (Score) -> Unit) {
+        val score = Score(c, c.nextTemp.toString())
+        c.nextTemp += 1
+        block(score)
+        c.nextTemp -= 1
+    }
+
+    private operator fun String.unaryPlus() = c.add(this)
+}
+
+class ScoreProvider internal constructor(private val c: FunctionContext, private val value: Int) {
+    operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): Score = Score(c, property.name).also {
+        c.add("scoreboard players set $it _ $value")
+    }
+}
+
+fun FunctionContext.score(value: Int) = ScoreProvider(this, value)
+
 class Function internal constructor(
     val name: String,
-    internal val block: FunctionBuilder.() -> Unit,
+    internal val block: FunctionContext.() -> Unit,
 ) {
     init {
         entries.add(this)
@@ -19,84 +74,13 @@ class Function internal constructor(
     }
 }
 
-class FunctionBuilder internal constructor(private val name: String) {
-    private val commands: MutableList<String> = mutableListOf()
-    private var nextTemp: Int = 0
-
-    operator fun String.not() = +"# $this"
-    operator fun invoke() = +"function $name"
-    operator fun Function.invoke() = +"function $name"
-    fun say(message: String) = +"say $message"
-    fun score(value: Int) = ScoreProvider(value)
-    fun score(block: ScoreBuilder.() -> Unit): Score = ScoreBuilder(++nextTemp).apply(block).build()
-
-    inner class Score internal constructor(val name: String) {
-        val isTemp: Boolean by lazy { name.toIntOrNull() != null }
-
-        operator fun getValue(thisRef: Any?, property: KProperty<*>): Score = this
-        operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Score) = +"scoreboard players operation $this _ = $value _"
-        infix fun `=`(source: Score) = if (this !== source) +"scoreboard players set $this _ = $source _" else Unit
-        operator fun plusAssign(source: Score) = +"scoreboard players operation $this _ += $source _"
-        operator fun minusAssign(source: Score) = +"scoreboard players operation $this _ -= $source _"
-        operator fun timesAssign(source: Score) = +"scoreboard players operation $this _ *= $source _"
-        operator fun divAssign(source: Score) = +"scoreboard players operation $this _ /= $source _"
-        operator fun remAssign(source: Score) = +"scoreboard players operation $this _ %= $source _"
-        infix fun `min=`(source: Score) = +"scoreboard players operation $this _ < $source _"
-        infix fun `max=`(source: Score) = +"scoreboard players operation $this _ > $source _"
-        infix fun swap(source: Score) = +"scoreboard players operation $this _ >< $source _"
-        infix fun `=`(value: Int) = +"scoreboard players set $this _ $value"
-        operator fun plusAssign(value: Int) = +"scoreboard players add $this _ $value"
-        operator fun minusAssign(value: Int) = +"scoreboard players remove $this _ $value"
-        operator fun timesAssign(value: Int) = useTemp { it `=` value; this *= it }
-        operator fun divAssign(value: Int) = useTemp { it `=` value; this /= it }
-        operator fun remAssign(value: Int) = useTemp { it `=` value; this %= it }
-        infix fun `min=`(value: Int) = useTemp { it `=` value; this `min=` it }
-        infix fun `max=`(value: Int) = useTemp { it `=` value; this `max=` it }
-        override fun toString(): String = "#$name"
-
-        private inline fun useTemp(block: (Score) -> Unit) = block(Score((++nextTemp).toString())).also { nextTemp -= 1 }
-    }
-
-    inner class ScoreBuilder internal constructor(private val initialTemp: Int) {
-        private lateinit var lastTemp: Score
-
-        operator fun Score.plus(right: Score): Score = newTemp(this, right) { it `=` this; it += right }
-        operator fun Score.minus(right: Score): Score = newTemp(this, right) { it `=` this; it -= right }
-        operator fun Score.times(right: Score): Score = newTemp(this, right) { it `=` this; it *= right }
-        operator fun Score.div(right: Score): Score = newTemp(this, right) { it `=` this; it /= right }
-        operator fun Score.rem(right: Score): Score = newTemp(this, right) { it `=` this; it %= right }
-        infix fun Score.min(right: Score): Score = newTemp(this, right) { it `=` this; it `min=` right }
-        infix fun Score.max(right: Score): Score = newTemp(this, right) { it `=` this; it `max=` right }
-
-        private inline fun newTemp(left: Score, right: Score, block: (Score) -> Unit): Score = when {
-            left.isTemp && right.isTemp -> left.also(block)
-            else -> Score((++nextTemp).toString()).also(block)
-        }.also { lastTemp = it }
-
-        fun build(): Score {
-            nextTemp = initialTemp - 1
-            return lastTemp
-        }
-    }
-
-    inner class ScoreProvider internal constructor(private val value: Int) {
-        operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): Score = Score(property.name).also {
-            +"scoreboard players set $it _ $value"
-        }
-    }
-
-    internal fun build(block: (String) -> Unit) = commands.forEach(block)
-
-    private operator fun String.unaryPlus(): Unit = run { commands.add(this) }
-}
-
-class FunctionProvider internal constructor(private val block: FunctionBuilder.() -> Unit) {
+class FunctionProvider internal constructor(private val block: FunctionContext.() -> Unit) {
     operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): Function = Function(functionName(thisRef, property), block)
 }
 
-fun function(block: FunctionBuilder.() -> Unit): FunctionProvider = FunctionProvider(block)
+fun function(block: FunctionContext.() -> Unit): FunctionProvider = FunctionProvider(block)
 
-class MetaFunctionProvider1<A1> internal constructor(private val block: FunctionBuilder.(A1) -> Unit) {
+class MetaFunctionProvider1<A1> internal constructor(private val block: FunctionContext.(A1) -> Unit) {
     operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): F = F(functionName(thisRef, property))
     inner class F(private val name: String) {
         operator fun getValue(thisRef: Any?, property: KProperty<*>): F = this
@@ -104,9 +88,9 @@ class MetaFunctionProvider1<A1> internal constructor(private val block: Function
     }
 }
 
-fun <A1> metaFunction(block: FunctionBuilder.(A1) -> Unit): MetaFunctionProvider1<A1> = MetaFunctionProvider1(block)
+fun <A1> metaFunction(block: FunctionContext.(A1) -> Unit): MetaFunctionProvider1<A1> = MetaFunctionProvider1(block)
 
-class MetaFunctionProvider2<A1, A2> internal constructor(private val block: FunctionBuilder.(A1, A2) -> Unit) {
+class MetaFunctionProvider2<A1, A2> internal constructor(private val block: FunctionContext.(A1, A2) -> Unit) {
     operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): F = F(functionName(thisRef, property))
     inner class F(private val name: String) {
         operator fun getValue(thisRef: Any?, property: KProperty<*>): F = this
@@ -114,7 +98,7 @@ class MetaFunctionProvider2<A1, A2> internal constructor(private val block: Func
     }
 }
 
-fun <A1, A2> metaFunction(block: FunctionBuilder.(A1, A2) -> Unit): MetaFunctionProvider2<A1, A2> = MetaFunctionProvider2(block)
+fun <A1, A2> metaFunction(block: FunctionContext.(A1, A2) -> Unit): MetaFunctionProvider2<A1, A2> = MetaFunctionProvider2(block)
 
 private fun functionName(thisRef: Any?, property: KProperty<*>): String = "${thisRef?.javaClass?.name?.let { "$it/" } ?: ""}${property.name}".snakecase()
 

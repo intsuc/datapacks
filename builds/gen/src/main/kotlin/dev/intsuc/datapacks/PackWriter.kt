@@ -24,7 +24,7 @@ interface PackWriter : Closeable {
         while (Function.entries.isNotEmpty()) {
             val function = Function.entries.removeLast()
             entry("data/minecraft/function/${function.name}.mcfunction")
-            FunctionBuilder(function.name).apply(function.block).build(this::write)
+            FunctionContext(function.name).apply(function.block).build(this::write)
         }
     }
 
